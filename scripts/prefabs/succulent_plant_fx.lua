@@ -23,22 +23,30 @@ local function OnAnimOver(inst)
                 return
             end
         end
-        inst.AnimState:PlayAnimation("ungrow_"..inst.variation)
+        inst.AnimState:PlayAnimation("ungrow_"..tostring(inst.variation))
     end
 end
 
-local function OnAnimOver_flower(inst)
-    local x, y, z = inst.Transform:GetWorldPosition()
+-- local function OnAnimOver_flower(inst)
+--     if inst.AnimState:IsCurrentAnimation("ungrow_"..tostring(inst.variation)) then
+--             inst:Remove()
+--     else
+--         local x, y, z = inst.Transform:GetWorldPosition()
+--         if #TheSim:FindEntities(x, y, z, 1.7, {"succulent_flower"}) ~= 0 then
+--             inst.AnimState:PlayAnimation("idle_"..tostring(inst.variation))
+--         else
+--             inst.AnimState:PlayAnimation("ungrow_"..inst.variation)
+--         end
+--     end
+-- end
 
-    if inst.AnimState:IsCurrentAnimation("ungrow_"..tostring(inst.variation)) then
+local function fade(inst)
+    inst.AnimState:PlayAnimation("ungrow_"..tostring(inst.variation))
+    inst:ListenForEvent("animover", function ()
+        if inst.AnimState:IsCurrentAnimation("ungrow_"..tostring(inst.variation)) then
             inst:Remove()
-    else
-        if #TheSim:FindEntities(x, y, z, 1.7, {"succulent_flower"}) ~= 0 then
-            inst.AnimState:PlayAnimation("idle_"..tostring(inst.variation))
-        else
-            inst.AnimState:PlayAnimation("ungrow_"..inst.variation)
         end
-    end
+    end)
 end
 
 local function SetVariation(inst, variation)
@@ -87,15 +95,14 @@ local function common(persists)
 end
 
 local function flower()
-    local inst = common(true)
-
+    local inst = common(false)
     inst:AddTag("succulent_plant_fx_flower")
 
     if not TheWorld.ismastersim then
         return inst
     end
 
-    inst:ListenForEvent("animover", OnAnimOver_flower)
+    inst.fade = fade
 
     inst.OnSave = onsave
     inst.OnLoad = onload

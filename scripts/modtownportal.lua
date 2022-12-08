@@ -2,7 +2,7 @@
 
 local function SetPortalChannaling(inst)
     if TheWorld.ismastersim then
-        local old_onchannelingfn, old_onstopchannelingfn = inst.components.channelable.onchannelingfn, inst.components.channelable.onstopchannelingfn
+        local _OnStartChanneling, _OnStopChanneling = inst.components.channelable.onchannelingfn, inst.components.channelable.onstopchannelingfn
 
         local function OnStartChanneling(portal,channeler)
             local sanity = 0
@@ -13,7 +13,7 @@ local function SetPortalChannaling(inst)
                 end
             end
 
-            old_onchannelingfn(portal, channeler)
+            _OnStartChanneling(portal, channeler)
 
             if channeler and channeler:HasTag("buff_safeteleport") then
                 if portal.channeler ~= nil then
@@ -24,7 +24,7 @@ local function SetPortalChannaling(inst)
         end
 
         local function OnStopChanneling(portal, aborted)
-            return old_onstopchannelingfn(portal, aborted)
+            return _OnStopChanneling(portal, aborted)
         end
 
         inst.components.channelable:SetChannelingFn(OnStartChanneling, OnStopChanneling)
@@ -46,4 +46,108 @@ local function SetPortalChannaling(inst)
     end
 end
 
-AddPrefabPostInit("townportal",SetPortalChannaling)
+
+
+
+
+
+
+
+
+AddPrefabPostInit("townportal",function (inst)
+
+    if not TheWorld.ismastersim then
+        return inst
+    end
+
+    local _OnStartChanneling,_OnStopChanneling = inst.components.channelable.onchannelingfn, inst.components.channelable.onstopchannelingfn
+    inst.components.channelable.onchannelingfn = function (inst, channeler)
+        if channeler and channeler:HasTag("buff_safeteleport") then
+            channeler = {components = {sanity = nil}}
+        end
+        return _OnStartChanneling(inst, channeler)
+    end
+
+    local _OnStartTeleporting = inst.components.teleporter.onActivate
+    inst.components.teleporter.onActivate = function (inst, doer)
+        if doer:HasTag("player") and doer:HasTag("buff_safeteleport") then
+            if doer.components.talker ~= nil then
+                doer.components.talker:ShutUp()
+                return
+            end
+        end
+        return _OnStartTeleporting(inst, doer)
+    end
+end)
+
+
+
+
+
+
+
+
+local function killtask(inst)
+    if inst.tpstonedamagetask ~= nil then
+        inst.tpstonedamagetask:Cancel()
+        inst.tpstonedamagetask = nil
+    end
+end
+
+local NO_HARM_TAGS =
+{
+    "player",
+	"companion",
+    "no_townportaltalisman_damage",
+}
+
+local function immune(inst)
+    for _,tag in pairs(NO_HARM_TAGS) do
+        if inst:HasTag(tag) then
+            return true
+        end
+    end
+end
+
+local function HarmOwner(inst)
+    local owner = inst.components.inventoryitem:GetGrandOwner()
+    if owner and owner.components.health ~= nil then
+        if immune(owner) then
+            killtask(inst)
+        else
+            local amt = inst.components.stackable:StackSize()
+            owner.components.health:DoDelta(-50*amt, nil, inst.prefab)
+            inst.tpstonedamagetask = inst:DoTaskInTime(1, HarmOwner)
+        end
+    end
+end
+
+local function OnLinkTownPortals(inst, other)
+    if other ~= nil then
+        inst.tpstonedamagetask = inst:DoTaskInTime(1, HarmOwner)
+    else
+        killtask(inst)
+    end
+end
+
+AddPrefabPostInit("townportaltalisman", function (inst)
+    if not TheWorld.ismastersim then
+        return inst
+    end
+
+    local _OnStartTeleporting = inst.components.teleporter.onActivate
+    inst.components.teleporter.onActivate = function (inst, doer)
+        if doer:HasTag("player") and doer:HasTag("buff_safeteleport") then
+            if doer.components.talker ~= nil then
+                doer.components.talker:ShutUp()
+                return
+            end
+        end
+        return _OnStartTeleporting(inst, doer)
+    end
+
+    -- 伤害
+    inst:ListenForEvent("linktownportals", OnLinkTownPortals)
+
+end)
+

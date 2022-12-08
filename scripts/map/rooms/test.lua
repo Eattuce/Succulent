@@ -1,6 +1,6 @@
 AddRooom("Test", {
     colour={r=0,g=0,b=0,a=0},
-    value = GROUND.SAVANNA,
+    value = WORLD_TILES.SAVANNA,
     contents = {
         distributepercent = 0.05,
         distributeprefabs = {
@@ -11,7 +11,7 @@ AddRooom("Test", {
 
 AddRooom("bg_Test", {
     colour={r=0,g=0,b=0,a=0},
-    value = GROUND.SAVANNA,
+    value = WORLD_TILES.SAVANNA,
     tags = {"ExitPiece", "Cheaster_Eyebone"},
     contents = {
         distributepercent = 0.25,

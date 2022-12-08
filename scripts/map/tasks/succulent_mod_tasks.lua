@@ -10,7 +10,7 @@ AddTask("IslandRelic", {
         ["TechandBush"] = 1,
         -- ["WormholeToRelic"] = 1,
     },
-    room_bg = GROUND.DIRT,
+    room_bg = WORLD_TILES.DIRT,
     background_room = "BGBadlands",
 	cove_room_name = "Blank",
     make_loop = true,
@@ -29,7 +29,7 @@ AddTask("SecondDragon", {
     room_choices={
         ["DragonflyArena"] = 1,
     },
-    room_bg=GROUND.DIRT,
+    room_bg=WORLD_TILES.DIRT,
     background_room="BGBadlands",
     colour={r=.05,g=.5,b=.05,a=1},
 })

@@ -8,9 +8,9 @@ local function IsInSandstormArea(pt)
 end
 
 local function SpawnManager(inst, pt)
-    print("1")
+    -- print("1")
     if #TheSim:FindEntities(pt.x, pt.y, pt.z, maxradius, {"OASISMANAGER"}) == 0 then
-        print("2")
+        -- print("2")
         local manager = SpawnPrefab("oasismanager")
         -- local x,y,z = inst.Transform:GetWorldPosition()
         manager.seedpoint = pt--inst:GetPosition()

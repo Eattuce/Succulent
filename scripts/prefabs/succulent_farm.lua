@@ -20,8 +20,6 @@ local levels =
     { amount=0, idle="idle", hit="hit_idle" },
 }
 
-local FULLY_REPAIRED_WORKLEFT = 3
-
 local percent = 0.25
 
 local function StartGrowing(inst, giver, product)
@@ -32,15 +30,15 @@ local function StartGrowing(inst, giver, product)
         elseif TheWorld.state.iswinter then
             max_produce  = levels[3].amount
         end
-        local productname = product.prefab
-        local totaltime = TUNING.MUSHROOMFARM_FULL_GROW_TIME / (max_produce * percent * inst.remainingharvests)
+        local productname = "succulent_picked"
+        local totaltime = TUNING.MUSHROOMFARM_FULL_GROW_TIME
 
         inst.components.harvestable:SetProduct(productname, max_produce)
         inst.components.harvestable:SetGrowTime(5 * totaltime / max_produce)
 
         inst.components.harvestable:Grow()
 
-        TheWorld:PushEvent("itemplanted", { doer = giver, pos = inst:GetPosition() })
+        TheWorld:PushEvent("itemplanted", { doer = giver, pos = inst:GetPosition() }) --this event is pushed in other places too
     end
 end
 
@@ -71,7 +69,6 @@ local function setlevel(inst, level, dotransition)
             inst.AnimState:PlayAnimation(inst.anims.idle)
         end
     end
-    -- snow(inst)
 end
 
 local function updatelevel(inst, dotransition)
@@ -87,9 +84,9 @@ end
 
 local function onharvest(inst, picker)
     if not inst:HasTag("burnt") then
-        if inst.remainingharvests > 1 then
-            inst.remainingharvests = inst.remainingharvests - 1
-        end
+        -- if inst.remainingharvests > 1 then
+        --     inst.remainingharvests = inst.remainingharvests - 1
+        -- end
         updatelevel(inst)
     end
 end
@@ -108,7 +105,9 @@ local function onhammered(inst, worker)
 
     local fx = SpawnPrefab("collapse_small")
     fx.Transform:SetPosition(inst.Transform:GetWorldPosition())
-    fx:SetMaterial("wood")
+    local skin_build = inst:GetSkinBuild()
+    local material = skin_build ~= nil and "pot" or "wood"
+    fx:SetMaterial(material)
     inst:Remove()
 end
 
@@ -120,8 +119,7 @@ local function onhit(inst, worker)
 end
 
 local function onbuilt(inst)
-    inst.AnimState:PlayAnimation("place")
-    inst.AnimState:PushAnimation("idle", false)
+    inst.AnimState:PlayAnimation("idle")
     inst.SoundEmitter:PlaySound("dontstarve/common/together/mushroomfarm/craft")
 end
 
@@ -190,25 +188,21 @@ end
 local function accepttest(inst, item, giver)
     if item == nil then
         return false
-    elseif item.components and item.components.fertilizer ~= nil then
-        if inst.remainingharvests < TUNING.MUSHROOMFARM_MAX_HARVESTS then
-            return true
-        end
-        -- giver.components.talker:ShutUp()
-        -- giver:DoTaskInTime(0, function () giver.components.talker:Say(GetString(giver, "NO_NEED_TO_FERTILIZE")) end)
-        return false, "NONEEDFERTILIZE"
+    -- elseif item.components and item.components.fertilizer ~= nil then
+    --     if inst.remainingharvests < TUNING.MUSHROOMFARM_MAX_HARVESTS then
+    --         return true
+    --     end
+    --     return false, "NONEEDFERTILIZE"
     elseif item.prefab == "succulent_picked" then
         return true
     end
-    -- giver.components.talker:ShutUp()
-    -- giver:DoTaskInTime(0,function () giver.components.talker:Say(GetString(giver, "MUST_BE_SUCCULENT")) end)
     return false, "MUSTBESUCCULENT"
 end
 
 local function onacceptitem(inst, giver, item)
     if item ~= nil then
         if item.components and item.components.fertilizer ~= nil then
-            inst.remainingharvests = TUNING.MUSHROOMFARM_MAX_HARVESTS
+            -- inst.remainingharvests = TUNING.MUSHROOMFARM_MAX_HARVESTS
             inst.SoundEmitter:PlaySound("dontstarve/common/together/mushroomfarm/grow")
             updatelevel(inst)
         else
@@ -224,7 +218,7 @@ local function onsave(inst, data)
         data.growtime = inst.components.harvestable.growtime
         data.product = inst.components.harvestable.product
         data.maxproduce = inst.components.harvestable.maxproduce
-        data.remainingharvests = inst.remainingharvests
+        -- data.remainingharvests = inst.remainingharvests
     end
 end
 
@@ -238,10 +232,24 @@ local function onload(inst, data)
             inst.components.harvestable.product = data.product
             inst.components.harvestable.maxproduce = data.maxproduce
 
-            inst.remainingharvests = data.remainingharvests or 1
+            -- inst.remainingharvests = data.remainingharvests or 1
 
             updatelevel(inst)
         end
+    end
+end
+
+local function OnBasicSkin(inst)
+    if not inst.components.burnable then
+        MakeSmallBurnable(inst, nil, nil, true)
+        MakeSmallPropagator(inst)
+        inst.components.burnable:SetOnBurntFn(onburnt)
+        inst.components.burnable:SetOnIgniteFn(onignite)
+        inst.components.burnable:SetOnExtinguishFn(onextinguish)
+    end
+
+    if inst.components.workable then
+        inst.components.workable:SetWorkLeft(4)
     end
 end
 
@@ -269,7 +277,7 @@ local function fn()
     --trader, alltrader (from trader component) added to pristine state for optimization
     inst:AddTag("trader")
     inst:AddTag("alltrader")
-    inst:AddTag("mushroom_farm")
+    -- inst:AddTag("mushroom_farm")
     inst:AddTag("succulent_farm")
 
     MakeSnowCoveredPristine(inst)
@@ -299,28 +307,25 @@ local function fn()
 
     inst:AddComponent("workable")
     inst.components.workable:SetWorkAction(ACTIONS.HAMMER)
-    inst.components.workable:SetWorkLeft(FULLY_REPAIRED_WORKLEFT)
+    inst.components.workable:SetWorkLeft(4)
     inst.components.workable:SetOnFinishCallback(onhammered)
     inst.components.workable:SetOnWorkCallback(onhit)
 
-    -- inst:AddComponent("grower")
-    -- inst.components.grower.setfertility = setfertilityfn
-
-
-    inst:WatchWorldState("snowcoveredchanged", MakeSnowCovered)
+    -- inst:WatchWorldState("snowcoveredchanged", MakeSnowCovered)
 
     MakeHauntableWork(inst)
 
-    -- MakeSnowCovered(inst)
+    MakeSnowCovered(inst)
     inst:ListenForEvent("onbuilt", onbuilt)
+    inst.SetBasic = OnBasicSkin
 
-    MakeMediumBurnable(inst, nil, nil, true)
+    MakeSmallBurnable(inst, nil, nil, true)
     MakeSmallPropagator(inst)
     inst.components.burnable:SetOnBurntFn(onburnt)
     inst.components.burnable:SetOnIgniteFn(onignite)
     inst.components.burnable:SetOnExtinguishFn(onextinguish)
 
-    inst.remainingharvests = TUNING.MUSHROOMFARM_MAX_HARVESTS
+    -- inst.remainingharvests = TUNING.MUSHROOMFARM_MAX_HARVESTS
 
     inst.OnSave = onsave
     inst.OnLoad = onload

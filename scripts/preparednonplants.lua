@@ -1,5 +1,5 @@
 
-local items_plants =
+local items =
 {
     dewdrop =
     {
@@ -21,7 +21,7 @@ local items_plants =
     },
 }
 
-for k, v in pairs(items_plants) do
+for k, v in pairs(items) do
     v.name = k
     v.weight = v.weight or 1
     v.priority = v.priority or 0
@@ -29,4 +29,4 @@ for k, v in pairs(items_plants) do
     v.cookbook_category = "cookpot"
 end
 
-return items_plants
+return items

@@ -13,19 +13,19 @@ local prefabs =
     "thistle_kid",
 }
 
-local seg_time = 30
-local total_day_time = seg_time*16
-
-local function ondeploy(inst, position)
-    inst = inst.components.stackable:Get()
-    inst:Remove()
-
-    local sapling = SpawnPrefab("thistle_kid")
-    sapling.Transform:SetPosition(position:Get())
-    sapling.SoundEmitter:PlaySound("dontstarve/wilson/plant_tree")
-    sapling.components.growable:SetStage(1)
-    sapling.components.growable:StartGrowing(total_day_time)
-    -- sapling.components.pickable:MakeBarren()
+local function ondeploy(inst, pt, deployer)
+    local tree = SpawnPrefab("thistle_kid")
+    if tree ~= nil then
+        tree.Transform:SetPosition(pt:Get())
+        inst.components.stackable:Get():Remove()
+        if tree.components.pickable ~= nil then
+            tree.components.growable:SetStage(1)
+            tree.components.growable:StartGrowing()
+        end
+        if deployer ~= nil and deployer.SoundEmitter ~= nil then
+            deployer.SoundEmitter:PlaySound("dontstarve/common/plant")
+        end
+    end
 end
 
 local function fn()
@@ -82,4 +82,5 @@ local function fn()
 end
 
 return Prefab("thistle_seed", fn, assets, prefabs),
-    MakePlacer("thistle_seed_placer", "thistle_bush", "thistle_bush", "wither")
+    MakePlacer("thistle_seed_placer", "thistle_bush", "thistle_bush", "idle_1"),
+    MakePlacer("dug_thistle_bush_placer", "thistle_bush", "thistle_bush", "idle_1")

@@ -1,191 +1,22 @@
 -- 改自myth_skinsapi
-GLOBAL.MYSKINS = {}
-local skins = {}
+GLOBAL.SUCCULENT_SKINS = {}
+SKIN_RARITY_COLORS["Bottle"]    = {    167/255,  220/255,     252/255,    1 }      --#a7dcfc
+SKIN_RARITY_COLORS["Rose"]      = {    206/255,  125/255,     115/255,    1 }      --#ce7d73
+SKIN_RARITY_COLORS["Rainbow"]   = {    197/255,  191/255,     28/255,     1 }      --#c5bf1c
 
-local baseimage = {}
-
-local function my_basic_init_fn(inst, name)
-    if inst.components.placer == nil and not TheWorld.ismastersim then
-        return
-    end
-    local data = skins[name]
-    if not data then return end
-    if data.bank then
-        inst.AnimState:SetBank(data.bank)
-        print("Bank", data.bank)
-    end
-    inst.AnimState:SetBuild(data.build or name)
-    print("Build", data.build)
-    inst.AnimState:PlayAnimation(data.anim)
-    print("PlayAnimation", data.anim)
-    if data.push then
-        inst.AnimState:PushAnimation(data.push, data.loop or false)
-        print("PushAnimation", data.push, data.loop)
-    end
-    if inst.components.inventoryitem ~= nil then
-        inst.components.inventoryitem.atlasname = data.atlas or ("images/inventoryimages/"..name .. ".xml")
-        inst.components.inventoryitem:ChangeImageName(data.image or name )
-    end
-
-    if data.custom_init_fn then
-        data.custom_init_fn(inst, name)
-    end
-end
-
-local function my_basic_clear_fn(inst, name)
-    local prefab = inst.prefab
-    local data = skins[name]
-    if not data then return end
-    if data.base_bank then
-        inst.AnimState:SetBank(data.base_bank)
-    end
-    inst.AnimState:SetBuild(data.base_build or prefab)
-    inst.AnimState:PlayAnimation(data.base_anim)
-    print("old skin cleared")
-    if data.base_push then
-        inst.AnimState:PushAnimation(data.base_push)
-    end
-    if inst.components.inventoryitem ~= nil then
-        if data.base_atlas and data.base_image then
-            inst.components.inventoryitem.atlasname = data.base_atlas
-            local imagename = data.base_image
-            imagename = imagename:sub(1,-5)
-            inst.components.inventoryitem:ChangeImageName(imagename)
-        else
-            inst.components.inventoryitem.atlasname = GetInventoryItemAtlas(prefab..".tex")
-            inst.components.inventoryitem:ChangeImageName(prefab)
-        end
-    end
-
-    if skins[name].skinclear_fn then
-        skins[name].skinclear_fn(inst, name)
-    end
-end
-
-local mt = getmetatable(TheInventory)
-local oldTheInventoryCheckOwnership = TheInventory.CheckOwnership
-mt.__index.CheckOwnership  = function(i,name,...)
-    if type(name)=="string" and skins[name] then
-        if skins[name] and skins[name].checkfn then
-            return skins[name].checkfn(i,name,...)
-        else
-            return true
-        end
-    else
-        return oldTheInventoryCheckOwnership(i,name,...)
-    end
-end
-local oldTheInventoryCheckOwnershipGetLatest = TheInventory.CheckOwnershipGetLatest
-mt.__index.CheckOwnershipGetLatest  = function(i,name,...)
-    if type(name)=="string" and skins[name] then
-        if skins[name] and skins[name].checkfn then
-            return skins[name].checkfn(i,name,...)
-        else
-            return true,0
-        end
-    else
-        return oldTheInventoryCheckOwnershipGetLatest(i,name,...)
-    end
-end
-
-local oldTheInventoryCheckClientOwnership = TheInventory.CheckClientOwnership
-mt.__index.CheckClientOwnership  = function(i,userid,name,...)
-    if type(name)=="string"  and skins[name] then
-        if skins[name] and skins[name].checkclientfn then
-            return skins[name].checkclientfn(i,userid,name,...)
-        else
-            return true
-        end
-    else
-        return oldTheInventoryCheckClientOwnership(i,userid,name,...)
-    end
-end
-
-AddClassPostConstruct("widgets/recipepopup",function(self)
-    local oldfn = self.GetSkinOptions
-    function self.GetSkinOptions(Recipepopup,...)
-    -- 设置皮肤选项栏 第一个默认皮肤的预览图片
-        local skin_options = oldfn(Recipepopup,...)
-        if skin_options then
-            if skin_options[1] and skin_options[1].image then
-                if Recipepopup.recipe and Recipepopup.recipe.product and baseimage[Recipepopup.recipe.product] then
-                    skin_options[1].image = baseimage[Recipepopup.recipe.product]
-                end
-            end
-    -- 为每个皮肤设置预览图片
-            for idx,data in pairs(Recipepopup.skins_list) do
-                if skin_options[idx+1] and skin_options[idx+1].image
-                    and data and data.item and skins[data.item]
-                    and (skins[data.item].atlas or skins[data.item].image)
-                then
-                    local image = skins[data.item].image or data.item..".tex"
-                    if image:sub(-4) ~= ".tex" then
-                        image = image..".tex"
-                    end
-                    local atlas = skins[data.item].atlas or GetInventoryItemAtlas(image)
-                    skin_options[idx+1].image = {atlas,image,"default.tex"}
-                end
-            end
-        end
-        return skin_options
-    end
-end)
-
-local oldSpawnPrefab = SpawnPrefab
-GLOBAL.SpawnPrefab = function(prefab,skin,skinid,userid,...)
-    if skins[skin] then
-        skinid = 0
-    end
-    return oldSpawnPrefab(prefab,skin,skinid,userid,...)
-end
-local oldReskinEntity = Sim.ReskinEntity
-Sim.ReskinEntity = function(sim,guid,oldskin,newskin,skinid,userid,...)
-    local inst = Ents[guid]
-    if oldskin and skins[oldskin] then
-        skins[oldskin].clear_fn(inst)
-    end
-    local r = oldReskinEntity(sim,guid,oldskin,newskin,skinid,userid,...)
-    if newskin and skins[newskin] then
-        skins[newskin].init_fn(inst)
-        inst.skinname = newskin
-        inst.skin_id = PREFAB_SKINS_IDS[inst.prefab][newskin] or 0
-    end
-    return r
-end
-
-AddSimPostInit(function()
-    for k,v in pairs(AllRecipes) do
-        if v.product ~= v.name and PREFAB_SKINS[v.product] then
-            PREFAB_SKINS[v.name]      = PREFAB_SKINS[v.product]
-            PREFAB_SKINS_IDS[v.name]  = PREFAB_SKINS_IDS[v.product]
-        end
-    end
-end)
-
-local function AddSkin(name, data)
-    local base = data.base_prefab
-    baseimage[base] = { "images/inventoryimages/"..base..".xml", base..".tex", "default.tex"}
-    data.type = data.type or "item"
-    data.rarity = data.rarity or "Loyal"
-
-    data.init_fn = function (inst) my_basic_init_fn(inst, name) end
-    data.clear_fn = function (inst) my_basic_clear_fn(inst, name) end
-
-    STRINGS.SKIN_NAMES[name] = data.namestring or name
-
-    if not PREFAB_SKINS[base] then
-        PREFAB_SKINS[base] = {}
-    end
-    table.insert(PREFAB_SKINS[base], name)
-
-    if not PREFAB_SKINS_IDS[base] then
-        PREFAB_SKINS_IDS[base] = {}
-    end
-    PREFAB_SKINS_IDS[base][name] = 1+#PREFAB_SKINS_IDS[base]
-
-    skins[name] = data
-
-    GLOBAL.MYSKINS[name] = data
+local modded_order = {Bottle = 20, Rose = 21, Rainbow = 22}
+local _oldCompareRarities = CompareRarities
+CompareRarities = function(a, b)
+	local rarity1 = GetRarityForItem(a)
+	local rarity2 = GetRarityForItem(b)
+	
+	if modded_order[rarity1] or modded_order[rarity2] then
+		local rarity1_sort = modded_order[rarity1] and modded_order[rarity1] or 1
+		local rarity2_sort = modded_order[rarity2] and modded_order[rarity2] or 1
+		
+		return rarity1_sort < rarity2_sort
+	end
+	return _oldCompareRarities(a, b)
 end
 
 --[[skin_datas
@@ -197,16 +28,351 @@ end
     -- body
 end
 ]]
-GLOBAL.succulent_medpot_clear_fn  = function(inst, skin)
-	inst.AnimState:SetBank("succulent_medpot")
-	inst.AnimState:SetBuild("succulent_medpot")
-    inst.AnimState:PlayAnimation("idle")
+
+
+
+local characterskins = {}
+
+local skincharacters = {}
+
+local SKIN_AFFINITY_INFO = require("skin_affinity_info")
+-- function MakeCharacterSkin(base, skinname, data)
+--     data.type = nil
+--     if not skincharacters[base] then
+--         skincharacters[base] = true
+--     end
+--     characterskins[skinname] = data
+--     data.base_prefab = base
+--     data.rarity = data.rarity or "Loyal"
+--     data.build_name_override = data.build_name_override or skinname
+--     if not STRINGS.UI.RARITY[data.rarity] then
+--         STRINGS.UI.RARITY[data.rarity] = data.rarity
+--         SKIN_RARITY_COLORS[data.rarity] = data.raritycorlor or {0.635, 0.769, 0.435, 1}
+--         RARITY_ORDER[data.rarity] = data.rarityorder or -1
+--     end
+--     -- 注册到字符串
+--     STRINGS.SKIN_NAMES[skinname] = data.name or skinname
+--     STRINGS.SKIN_DESCRIPTIONS[skinname] = data.des or ""
+--     STRINGS.SKIN_QUOTES[skinname] = data.quotes or ""
+--     -- 注册到皮肤列表
+--     if not PREFAB_SKINS[base] then
+--         PREFAB_SKINS[base] = {}
+--     end
+--     table.insert(PREFAB_SKINS[base], skinname)
+--     if not SKIN_AFFINITY_INFO[base] then
+--         SKIN_AFFINITY_INFO[base] = {}
+--     end
+--     table.insert(SKIN_AFFINITY_INFO[base], skinname)
+
+--     -- 创建皮肤预制物
+--     local prefab_skin = CreatePrefabSkin(skinname, data)
+--     if data.clear_fn then
+--         prefab_skin.clear_fn = data.clear_fn
+--     end
+--     prefab_skin.type = "base"
+--     RegisterPrefabs(prefab_skin) -- 注册并加载皮肤的prefab
+--     TheSim:LoadPrefabs({skinname})
+--     return prefab_skin
+-- end
+local itemskins = {}
+local itembaseimage = {}
+local function makedefaultimageformoddeditem(base, atlas, image)
+    itembaseimage[base] = {atlas, (image or base) .. ".tex", "default.tex"}
 end
 
-GLOBAL.succulent_largepot_clear_fn = function(inst, skin)
-    inst.AnimState:PlayAnimation("plant_4_idle")
+local function basic_init_fn(inst, skinname)
+    if inst.components.placer == nil and not TheWorld.ismastersim then
+        return
+    end
+    local data = itemskins[skinname]
+    if not data then
+        return
+    end
+    if data.bank then
+        inst.AnimState:SetBank(data.bank)
+    end
+    inst.AnimState:SetBuild(data.build or skinname)
+    if data.anim then
+        inst.AnimState:PlayAnimation(data.anim)
+    end
+    if inst.components.inventoryitem ~= nil then
+        inst.components.inventoryitem.atlasname = data.atlas or ("images/inventoryimages/" .. skinname .. ".xml")
+        inst.components.inventoryitem:ChangeImageName(data.image or skinname)
+    end
+    if data.skininit_fn then
+        data.skininit_fn(inst, skinname)
+    end
+end
+local function basic_clear_fn(inst, skinname)
+    local prefab = inst.prefab or ""
+    local data = itemskins[skinname]
+    if not data then
+        return
+    end
+    if data.basebank then
+        inst.AnimState:SetBank(data.basebank)
+    end
+    if data.baseanim then
+        inst.AnimState:PlayAnimation(data.baseanim)
+    end
+    inst.AnimState:SetBuild(data.basebuild or prefab)
+    if inst.components.inventoryitem ~= nil then
+        if itembaseimage[prefab] then
+            inst.components.inventoryitem.atlasname = itembaseimage[prefab][1]
+            local imagename = itembaseimage[prefab][2]
+            imagename = imagename:sub(1, -5)
+            inst.components.inventoryitem:ChangeImageName(imagename)
+        else
+            inst.components.inventoryitem.atlasname = GetInventoryItemAtlas(prefab .. ".tex")
+            inst.components.inventoryitem:ChangeImageName(prefab)
+        end
+
+    end
+    if itemskins[skinname].skinclear_fn then
+        itemskins[skinname].skinclear_fn(inst, skinname)
+    end
+end
+
+local function makeskinforitem(skinname, data)
+    data.type = nil
+    itemskins[skinname] = data
+    local base = data.base_prefab
+    -- data.base_prefab = base
+    data.rarity = data.rarity or "Loyal"
+    data.build_name_override = data.build_name_override or skinname
+    if not STRINGS.UI.RARITY[data.rarity] then
+        STRINGS.UI.RARITY[data.rarity] = data.rarity
+        SKIN_RARITY_COLORS[data.rarity] = data.raritycorlor or {0.635, 0.769, 0.435, 1}
+        RARITY_ORDER[data.rarity] = data.rarityorder or -1
+    end
+    STRINGS.SKIN_NAMES[skinname] = data.name or skinname
+    STRINGS.SKIN_DESCRIPTIONS[skinname] = data.des or ""
+    if not PREFAB_SKINS[base] then
+        PREFAB_SKINS[base] = {}
+    end
+    table.insert(PREFAB_SKINS[base], skinname)
+    if not PREFAB_SKINS_IDS[base] then
+        PREFAB_SKINS_IDS[base] = {}
+    end
+    local index = 1
+    for k, v in pairs(PREFAB_SKINS_IDS[base]) do
+        index = index + 1
+    end
+    PREFAB_SKINS_IDS[base][skinname] = index
+    data.skininit_fn = data.init_fn or nil
+    data.skinclear_fn = data.clear_fn or nil
+    data.init_fn = function(i)
+        basic_init_fn(i, skinname)
+    end
+    data.clear_fn = function(i)
+        basic_clear_fn(i, skinname)
+    end
+    if data.skinpostfn then
+        data.skinpostfn(data)
+    end
+
+    GLOBAL.SUCCULENT_SKINS[skinname] = data
+
+end
+
+local mt = getmetatable(TheInventory)
+local oldTheInventoryCheckOwnership = TheInventory.CheckOwnership
+mt.__index.CheckOwnership = function(i, name, ...)
+    if type(name) == "string" and (characterskins[name] or itemskins[name]) then
+        if characterskins[name] and characterskins[name].checkfn then
+            return characterskins[name].checkfn(i, name, ...)
+        elseif itemskins[name] and itemskins[name].checkfn then
+            return itemskins[name].checkfn(i, name, ...)
+        else
+            return true
+        end
+    else
+        return oldTheInventoryCheckOwnership(i, name, ...)
+    end
+end
+local oldTheInventoryCheckOwnershipGetLatest = TheInventory.CheckOwnershipGetLatest
+mt.__index.CheckOwnershipGetLatest = function(i, name, ...)
+    if type(name) == "string" and (characterskins[name] or itemskins[name]) then
+        if characterskins[name] and characterskins[name].checkfn then
+            return characterskins[name].checkfn(i, name, ...)
+        elseif itemskins[name] and itemskins[name].checkfn then
+            return itemskins[name].checkfn(i, name, ...)
+        else
+            return true, 0
+        end
+    else
+        return oldTheInventoryCheckOwnershipGetLatest(i, name, ...)
+    end
+end
+
+local oldTheInventoryCheckClientOwnership = TheInventory.CheckClientOwnership
+mt.__index.CheckClientOwnership = function(i, userid, name, ...)
+    if type(name) == "string" and (characterskins[name] or itemskins[name]) then
+        if characterskins[name] and characterskins[name].checkclientfn then
+            return characterskins[name].checkclientfn(i, userid, name, ...)
+        elseif itemskins[name] and itemskins[name].checkclientfn then
+            return itemskins[name].checkclientfn(i, userid, name, ...)
+        else
+            return true
+        end
+    else
+        return oldTheInventoryCheckClientOwnership(i, userid, name, ...)
+    end
+end
+
+local oldExceptionArrays = GLOBAL.ExceptionArrays
+GLOBAL.ExceptionArrays = function(ta, tb, ...)
+    local need
+    for i = 1, 100, 1 do
+        local data = debug.getinfo(i, "S")
+        if data then
+            if data.source and data.source:match("^scripts/networking.lua") then
+                need = true
+            end
+        else
+            break
+        end
+    end
+    if need then
+        local newt = oldExceptionArrays(ta, tb, ...)
+        for k, v in pairs(skincharacters) do
+            table.insert(newt, k) -- 偷渡
+        end
+        return newt
+    else
+        return oldExceptionArrays(ta, tb, ...)
+    end
+end
+local oldIsDefaultCharacterSkin = IsDefaultCharacterSkin
+GLOBAL.IsDefaultCharacterSkin = function(item, ...)
+    if item and characterskins[item] then
+        if characterskins[item].checkfn then
+            return characterskins[item].checkfn(nil, item)
+        else
+            return true
+        end
+    else
+        return oldIsDefaultCharacterSkin(item, ...)
+    end
+end
+
+local function sorabaseenable(self)
+    if self.name == "LoadoutSelect" then
+        for k, v in pairs(skincharacters) do
+            if not table.contains(DST_CHARACTERLIST, k) then
+                table.insert(DST_CHARACTERLIST, k)
+            end
+        end
+    elseif self.name == "LoadoutRoot" then
+        for k, v in pairs(skincharacters) do
+            if table.contains(DST_CHARACTERLIST, k) then
+                RemoveByValue(DST_CHARACTERLIST, k)
+            end
+        end
+    end
+end
+AddClassPostConstruct("widgets/widget", sorabaseenable)
+
+AddComponentPostInit("skinner", function(self)
+    local oldfn = self.SetSkinName
+    if oldfn then
+        function self.SetSkinName(s, skinname, ...)
+            local old = s.skin_name
+            local new = skinname
+            if characterskins[old] and characterskins[old].clear_fn then
+                characterskins[old].clear_fn(s.inst, old)
+            end
+            if characterskins[new] and characterskins[new].init_fn then
+                characterskins[new].init_fn(s.inst, new)
+            end
+            oldfn(s, skinname, ...)
+        end
+    end
+end)
+
+AddClassPostConstruct("widgets/recipepopup", function(self)
+    local oldfn = self.GetSkinOptions
+    function self.GetSkinOptions(s, ...)
+        local ret = oldfn(s, ...)
+        if ret then
+            if ret[1] and ret[1].image then
+                if s.recipe and s.recipe.product and itembaseimage[s.recipe.product] then
+                    ret[1].image = itembaseimage[s.recipe.product]
+                end
+            end
+            for k, v in pairs(s.skins_list) do
+                if ret[k + 1] and ret[k + 1].image and v and v.item and itemskins[v.item] and
+                    (itemskins[v.item].atlas or itemskins[v.item].image) then
+
+                    local image = itemskins[v.item].image or v.item .. ".tex"
+                    if image:sub(-4) ~= ".tex" then
+                        image = image .. ".tex"
+                    end
+                    local atlas = itemskins[v.item].atlas or GetInventoryItemAtlas(image)
+                    ret[k + 1].image = {atlas, image, "default.tex"}
+
+                end
+            end
+        end
+        return ret
+    end
+end)
+local oldSpawnPrefab = SpawnPrefab
+GLOBAL.SpawnPrefab = function(prefab, skin, skinid, userid, ...)
+    if itemskins[skin] then
+        skinid = 0
+    end
+    return oldSpawnPrefab(prefab, skin, skinid, userid, ...)
+end
+local oldReskinEntity = Sim.ReskinEntity
+Sim.ReskinEntity = function(sim, guid, oldskin, newskin, skinid, userid, ...)
+    local inst = Ents[guid]
+    if oldskin and itemskins[oldskin] then
+        itemskins[oldskin].clear_fn(inst) -- 清除旧皮肤的
+    end
+    local r = oldReskinEntity(sim, guid, oldskin, newskin, skinid, userid, ...)
+    if newskin and itemskins[newskin] then
+
+        itemskins[newskin].init_fn(inst)
+        inst.skinname = newskin
+        inst.skin_id = 0
+    end
+    return r
+end
+AddSimPostInit(function()
+    for k, v in pairs(AllRecipes) do
+        if v.product ~= v.name and PREFAB_SKINS[v.product] then
+            PREFAB_SKINS[v.name] = PREFAB_SKINS[v.product]
+            PREFAB_SKINS_IDS[v.name] = PREFAB_SKINS_IDS[v.product]
+        end
+    end
+end)
+
+
+GLOBAL.succulent_medpot_init_fn  = function(inst, skin)
+    basic_init_fn(inst, skin)
+end
+
+GLOBAL.succulent_medpot_clear_fn  = function(inst, skin)
+    basic_clear_fn(inst, skin)
+end
+
+GLOBAL.succulent_farm_init_fn  = function(inst, skin)
+    basic_init_fn(inst, skin)
+end
+
+GLOBAL.succulent_farm_clear_fn  = function(inst, skin)
+    basic_clear_fn(inst, skin)
+end
+
+GLOBAL.succulent_largepot_init_fn  = function(inst, skin)
+    basic_init_fn(inst, skin)
+end
+
+GLOBAL.succulent_largepot_clear_fn  = function(inst, skin)
+    basic_clear_fn(inst, skin)
 end
 
 for skinname, data in pairs(require("skinsettings")) do
-    AddSkin(skinname, data)
+    makeskinforitem(skinname, data)
 end

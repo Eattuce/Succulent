@@ -1,22 +1,22 @@
 AddRoom("TechandBush", -- Room 的名字，在worldgenmain里用到
 {
 	colour = {r=0,g=0,b=0,a=0},
-	value = GROUND.DIRT_NOISE,	-- 沙漠区域地皮
+	value = WORLD_TILES.DIRT_NOISE,	-- 沙漠区域地皮
 	tags = {"RoadPoison", "sandstorm"},-- 加上才有沙尘暴
 	contents =
 	{
-		countprefabs = {
-			wormhole_MARKER = 1,
-		},
+		-- countprefabs = {
+		-- 	wormhole_MARKER = 1,
+		-- },
         countstaticlayouts = -- Static layout
         {
             ["totem_tech"] = 1,-- 名称放在modworldgenmain了
         },
-		distributepercent = 0.06,
-		distributeprefabs =
-		{
-			succulent_plant = 0.08,
-		}
+		-- distributepercent = 0.06,
+		-- distributeprefabs =
+		-- {
+		-- 	succulent_plant = 0.08,
+		-- }
 }
 })
 
@@ -24,7 +24,7 @@ AddRoom("TechandBush", -- Room 的名字，在worldgenmain里用到
 
 AddRoom("WormholeToRelic", {
 	colour={r=1,g=0,b=0,a=0.3},
-	value = GROUND.DIRT_NOISE,
+	value = WORLD_TILES.DIRT_NOISE,
 	contents =  {
 					countprefabs = {
 						wormhole_MARKER = 1,
@@ -39,7 +39,7 @@ AddRoom("WormholeToRelic", {
 AddRoom("Pick some cactus flowers",
 {
 	colour = {r=0,g=0,b=0,a=0},
-	value = GROUND.DIRT_NOISE,	-- 沙漠区域地皮
+	value = WORLD_TILES.DIRT_NOISE,	-- 沙漠区域地皮
 	tags = {"RoadPoison", "sandstorm"},
 	contents =
 	{

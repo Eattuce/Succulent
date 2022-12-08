@@ -19,7 +19,7 @@ local function TendToPlantsAOE(inst, owner)
         for _, v in pairs(TheSim:FindEntities(x, y, z, TUNING.WORMWOOD_BLOOM_FARM_PLANT_INTERACT_RANGE, PLANT_TAGS)) do
             if v.components.farmplanttendable ~= nil then
                 v.components.farmplanttendable:TendTo(owner)
-                inst.components.finiteuses:Use(1)
+                -- inst.components.finiteuses:Use(1)
             end
         end
     end
@@ -28,7 +28,7 @@ end
 local function healowner(inst, owner)
     if (owner.components.health and owner.components.health:GetPercent() <= 0.6 ) then
         owner.components.health:DoDelta(TUNING.REDAMULET_CONVERSION, false, "emeraldamulet")
-        inst.components.finiteuses:Use(1)
+        inst.components.finiteuses:Use(5)
     end
 end
 
@@ -87,6 +87,7 @@ local function can_plant(inst)
 end
 
 local function onequip_emerald(inst, owner)
+    -- inst.onattach(owner)
     owner.AnimState:OverrideSymbol("swap_body", "torso_emeraldamulet", "torso_emeraldamulet")
 
     if inst.healtask == nil then
@@ -103,6 +104,7 @@ local function onequip_emerald(inst, owner)
 end
 
 local function onunequip_emerald(inst, owner)
+    -- inst.ondetach(owner)
     if owner.sg == nil or owner.sg.currentstate.name ~= "amulet_rebirth" then
         owner.AnimState:ClearOverrideSymbol("swap_body")
     end
@@ -139,6 +141,56 @@ local function turnoff(inst)
     end
 end
 
+
+--[[ local function ruinshat_oncooldown(inst)
+    inst._task = nil
+end
+
+local function ruinshat_unproc(inst)
+    if inst:HasTag("forcefield") then
+        inst:RemoveTag("forcefield")
+        if inst._fx ~= nil then
+            inst._fx:kill_fx()
+            inst._fx = nil
+        end
+
+        if inst._task ~= nil then
+            inst._task:Cancel()
+        end
+        inst._task = inst:DoTaskInTime(TUNING.ARMOR_RUINSHAT_COOLDOWN, ruinshat_oncooldown)
+    end
+end
+
+local function ruinshat_proc(inst, owner)
+    inst:AddTag("forcefield")
+    if inst._fx ~= nil then
+        inst._fx:kill_fx()
+    end
+    inst._fx = SpawnPrefab("green_forcefieldfx")
+    inst._fx.entity:SetParent(owner.entity)
+    inst._fx.Transform:SetPosition(0, 0.2, 0)
+
+
+    if inst._task ~= nil then
+        inst._task:Cancel()
+    end
+    inst._task = inst:DoTaskInTime(TUNING.ARMOR_RUINSHAT_DURATION, ruinshat_unproc)
+end
+
+local function tryproc(inst, owner, data)
+    if inst._task == nil and
+        not data.redirected then
+        ruinshat_proc(inst, owner)
+    end
+end
+local function ruins_onremove(inst)
+    if inst._fx ~= nil then
+        inst._fx:kill_fx()
+        inst._fx = nil
+    end
+end
+
+ ]]
 local function fn()
     local inst = CreateEntity()
 
@@ -153,7 +205,8 @@ local function fn()
     inst.AnimState:PlayAnimation("emeraldamulet")
 
     inst:AddTag("emeraldamulet")
-    inst:AddTag("venom")
+    inst:AddTag("whitneypoison_item")
+    -- inst:AddTag("bring_burnt_backtolife")
 
     inst.foleysound = "dontstarve/movement/foley/jewlery"
 
@@ -169,6 +222,8 @@ local function fn()
 
     inst:AddComponent("equippable")
     inst.components.equippable.equipslot = EQUIPSLOTS.NECK or EQUIPSLOTS.BODY
+    inst.components.equippable.dapperness = TUNING.DAPPERNESS_SMALL
+    inst.components.equippable.is_magic_dapperness = true
 
     inst:AddComponent("machine")
     inst.components.machine.turnonfn = turnon
@@ -186,8 +241,35 @@ local function fn()
     inst.components.finiteuses:SetMaxUses(160)
     inst.components.finiteuses:SetUses(160)
 
-    inst:AddComponent("hauntable")
-    inst.components.hauntable:SetHauntValue(TUNING.HAUNT_INSTANT_REZ)
+
+    -- inst._fx = nil
+    -- inst._task = nil
+    -- inst._owner = nil
+    -- inst.procfn = function(owner, data) tryproc(inst, owner, data) end
+    -- inst.onattach = function(owner)
+    --     if inst._owner ~= nil then
+    --         inst:RemoveEventCallback("attacked", inst.procfn, inst._owner)
+    --         inst:RemoveEventCallback("onremove", inst.ondetach, inst._owner)
+    --     end
+    --     inst:ListenForEvent("attacked", inst.procfn, owner)
+    --     inst:ListenForEvent("onremove", inst.ondetach, owner)
+    --     inst._owner = owner
+    --     inst._fx = nil
+    -- end
+    -- inst.ondetach = function()
+    --     ruinshat_unproc(inst)
+    --     if inst._owner ~= nil then
+    --         inst:RemoveEventCallback("attacked", inst.procfn, inst._owner)
+    --         inst:RemoveEventCallback("onremove", inst.ondetach, inst._owner)
+    --         inst._owner = nil
+    --         inst._fx = nil
+    --     end
+    -- end
+
+    -- inst.OnRemoveEntity = ruins_onremove
+
+
+    MakeHauntableLaunch(inst)
 
     return inst
 end

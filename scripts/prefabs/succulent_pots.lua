@@ -1,10 +1,7 @@
 require "prefabutil"
 
--- local assets =
--- {
---     Asset("ANIM", "anim/succulent_medpot.zip"),
---     Asset("ANIM", "anim/medpot_spa.zip"),
--- }
+local assets_med =      {Asset("ANIM", "anim/succulent_medpot.zip")}
+local assets_large =    {Asset("ANIM", "anim/succulent_farm.zip")}
 
 local prefabs =
 {
@@ -53,8 +50,6 @@ local function onextinguish_large(inst)
 end
 
 local function onbuilt_large(inst)
-    -- inst.AnimState:PlayAnimation("plant_4")
-    -- inst.AnimState:PushAnimation("plant_4_idle")
     inst.SoundEmitter:PlaySound("dontstarve/common/together/succulent_craft")
 end
 
@@ -69,6 +64,36 @@ local function onload(inst, data)
         if data.burnt then
             inst.components.burnable.onburnt(inst)
         end
+    end
+end
+
+local function OnBasicSkin(inst)
+    if not inst.components.burnable then
+        MakeMediumBurnable(inst, nil, nil, true)
+        inst.components.burnable:SetOnBurntFn(onburnt_large)
+        inst.components.burnable:SetOnIgniteFn(onignite_large)
+        inst.components.burnable:SetOnExtinguishFn(onextinguish_large)
+        end
+
+    if inst.components.workable then
+        inst.components.workable:SetWorkLeft(3)
+    end
+end
+
+local function OnWaterSkin(inst)
+    if inst.components.burnable then
+        if inst.components.burnable:IsBurning() then
+            inst.components.burnable:Extinguish()
+        end
+        if inst.components.burnable:IsSmoldering() then
+            inst.components.burnable:SmotherSmolder()
+        end
+
+        inst:RemoveComponent("burnable")
+    end
+
+    if inst.components.workable then
+        inst.components.workable:SetWorkLeft(1)
     end
 end
 
@@ -101,99 +126,90 @@ local function common()
 
     inst:AddComponent("lootdropper")
 
+    return inst
+end
+
+local function medpot_fn()
+    local inst = common()
+
+    inst.AnimState:SetBank("succulent_medpot")
+    inst.AnimState:SetBuild("succulent_medpot")
+    inst.AnimState:PlayAnimation("idle")
+    -- MakeSmallObstaclePhysics(inst, .1)
+
+    MakeInventoryPhysics(inst, nil, 0.7)
+    MakeInventoryFloatable(inst, nil, 0.2, {1, 0.9, 1.1})
+
+    -- 浮动
+    -- inst.components.floater.bob_percent = 0
+
+    local land_time = (POPULATING and math.random()*5*FRAMES) or 0
+    inst:DoTaskInTime(land_time, function(inst)
+        inst.components.floater:OnLandedServer()
+    end)
+
+    inst:AddTag("extrabuilddist")
+
+    if not inst._ismastersim then
+        return inst
+    end
+
+    inst.components.workable:SetWorkLeft(1)
+    inst.components.workable:SetOnFinishCallback(onhammered_med)
+
+    MakeSmallBurnable(inst, TUNING.SMALL_FUEL)
+
+    inst:ListenForEvent("onbuilt", onbuilt_med)
 
     return inst
 end
 
-local function MakePot(prefab, data)
-    local function fn()
-        local inst = common()
+local function largepot_fn()
+    local inst = common()
 
-        inst.AnimState:SetBank(data.bank)
-        inst.AnimState:SetBuild(data.build)
-        inst.AnimState:PlayAnimation(data.anim)
-        if data.loop then
-            inst.AnimState:PushAnimation(data.loop, false)
-        end
+    inst.AnimState:SetBank("succulent_farm")
+    inst.AnimState:SetBuild("succulent_farm")
+    inst.AnimState:PlayAnimation("plant_4")
+    inst.AnimState:PushAnimation("plant_4_idle")
 
-        if data.tags then
-            for _,tag in pairs(data.tags) do
-                inst:AddTag(tag)
-            end
-        end
+    MakeInventoryPhysics(inst, nil, 1)
+    MakeInventoryFloatable(inst, "med", 0, {1.1, 0.9, 1.1})
 
-        if data.common_init_fn then
-            data.common_init_fn(inst)
-        end
+    local land_time = (POPULATING and math.random()*5*FRAMES) or 0
+    inst:DoTaskInTime(land_time, function(inst)
+        inst.components.floater:OnLandedServer()
+    end)
 
-        if not inst._ismastersim then
-            return inst
-        end
+    inst:AddTag("structure")
 
-        inst.components.workable:SetWorkLeft(data.workleft)
-        inst.components.workable:SetOnFinishCallback(data.onhammered)
-
-        inst:ListenForEvent("onbuilt", data.onbuilt)
-
-        if data.master_init_fn then
-            data.master_init_fn(inst)
-        end
-
-        inst:ListenForEvent("snowcoveredchanged", MakeSnowCovered)
-
+    if not inst._ismastersim then
         return inst
     end
 
-    return Prefab(prefab, fn, data.assets, prefabs)
+    inst.components.workable:SetWorkLeft(3)
+    inst.components.workable:SetOnFinishCallback(onhammered_large)
+
+    inst:ListenForEvent("onbuilt", onbuilt_large)
+    -- inst:ListenForEvent("snowcoveredchanged", MakeSnowCovered)
+    MakeSnowCovered(inst)
+
+    MakeMediumBurnable(inst, nil, nil, true)
+    inst.components.burnable:SetOnBurntFn(onburnt_large)
+    inst.components.burnable:SetOnIgniteFn(onignite_large)
+    inst.components.burnable:SetOnExtinguishFn(onextinguish_large)
+
+    inst.SetBasic = OnBasicSkin
+    inst.SetSkin = OnWaterSkin
+
+    inst.OnSave = onsave
+    inst.OnLoad = onload
+
+    return inst
 end
 
-local defs =
-{
-    succulent_medpot =
-    {
-        bank = "succulent_medpot",
-        build = "succulent_medpot",
-        anim = "idle",
-        placer_anim = "idle",
-        workleft = 1,
-        tags = {"structure"},
-        onhammered = onhammered_med,
-        onbuilt = onbuilt_med,
-        master_init_fn = function (inst) MakeSmallBurnable(inst) end,
-        assets = {Asset("ANIM", "anim/succulent_medpot.zip"),Asset("ANIM", "anim/medpot_spa.zip")}
-    },
-    succulent_largepot =
-    {
-        bank = "succulent_farm",
-        build = "succulent_farm",
-        anim = "plant_4",
-        loop = "plant_4_idle",
-        placer_anim = "plant_4_idle",
-        workleft = 3,
-        placer_fn = function (inst)
-            inst.AnimState:Hide("snow")
-        end,
-        onhammered = onhammered_large,
-        onbuilt = onbuilt_large,
-        common_init_fn = function (inst) MakeObstaclePhysics(inst, .5) end,
-        master_init_fn = function (inst)
-            MakeMediumBurnable(inst, nil, nil, true)
-            inst.components.burnable:SetOnBurntFn(onburnt_large)
-            inst.components.burnable:SetOnIgniteFn(onignite_large)
-            inst.components.burnable:SetOnExtinguishFn(onextinguish_large)
-
-            inst.OnSave = onsave
-            inst.OnLoad = onload
-        end,
-        assets = {Asset("ANIM", "anim/succulent_farm.zip")}
-    },
-
-}
-
-local objects = {}
-for prefabname, data in pairs(defs) do
-    table.insert(objects, MakePot(prefabname, data))
-    table.insert(objects, MakePlacer(prefabname.."_placer", data.bank, data.build, data.placer_anim, nil, nil, nil, nil, nil, nil, data.placer_fn))
-end
-
-return unpack(objects)
+return Prefab("succulent_medpot", medpot_fn, assets_med, prefabs),
+    MakePlacer("succulent_medpot_placer","succulent_medpot","succulent_medpot", "idle"),
+    Prefab("succulent_largepot", largepot_fn, assets_large, prefabs),
+    MakePlacer("succulent_largepot_placer","succulent_farm","succulent_farm", "plant_4_idle", nil, nil, nil, nil, nil, nil, function (inst)
+        inst.AnimState:Hide("snow")
+    end)

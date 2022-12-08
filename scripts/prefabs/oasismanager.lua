@@ -1,4 +1,7 @@
 
+-- !!!BAD IDEA!!!
+-- Don't use it anymore
+
 local r = 4*4
 local maxradius = 2*r
 
@@ -114,8 +117,8 @@ local function fn()
 
     -- inst.seedpoint = inst:GetPosition()
 
-    inst:ListenForEvent("itemplanted", inst._onitemplanted, TheWorld)
-    inst:ListenForEvent("plantkilled", inst._onplantkilled, TheWorld)
+    -- inst:ListenForEvent("itemplanted", inst._onitemplanted, TheWorld)
+    -- inst:ListenForEvent("plantkilled", inst._onplantkilled, TheWorld)
 
 
     inst.OnSave = onsave

@@ -1,18 +1,12 @@
 
 
-local seg_time = 30
-local total_day_time = seg_time*16
-
-
 local function teleport_attach(inst, target)
     target:AddTag("buff_safeteleport")
 end
 
 local function teleport_detach(inst, target)
-    target:Remove("buff_safeteleport")
+    target:RemoveTag("buff_safeteleport")
 end
-
-
 
 local function OnTimerDone(inst, data)
     if data.name == "buffover" then
@@ -20,7 +14,15 @@ local function OnTimerDone(inst, data)
     end
 end
 
-local function MakeBuff(name, onattachedfn, onextendedfn, ondetachedfn, duration, priority, prefabs)
+local function shadow_attach(inst, target)
+    target:AddTag("shadowdominance")
+end
+
+local function shadow_detach(inst, target)
+    target:RemoveTag("shadowdominance")
+end
+
+local function MakeBuff(name, onattachedfn, onextendedfn, ondetachedfn, duration, priority, prefabs, announce)
     local function OnAttached(inst, target)
         inst.entity:SetParent(target.entity)
         inst.Transform:SetPosition(0, 0, 0) --in case of loading
@@ -28,7 +30,9 @@ local function MakeBuff(name, onattachedfn, onextendedfn, ondetachedfn, duration
             inst.components.debuff:Stop()
         end, target)
 
-        target:PushEvent("foodbuffattached", { buff = "ANNOUNCE_ATTACH_BUFF_"..string.upper(name), priority = priority })
+        if announce then
+            target:PushEvent("foodbuffattached", { buff = "ANNOUNCE_ATTACH_BUFF_"..string.upper(name), priority = priority })
+        end
         if onattachedfn ~= nil then
             onattachedfn(inst, target)
         end
@@ -38,7 +42,9 @@ local function MakeBuff(name, onattachedfn, onextendedfn, ondetachedfn, duration
         inst.components.timer:StopTimer("buffover")
         inst.components.timer:StartTimer("buffover", duration)
 
-        target:PushEvent("foodbuffattached", { buff = "ANNOUNCE_ATTACH_BUFF_"..string.upper(name), priority = priority })
+        if announce then
+            target:PushEvent("foodbuffattached", { buff = "ANNOUNCE_ATTACH_BUFF_"..string.upper(name), priority = priority })
+        end
         if onextendedfn ~= nil then
             onextendedfn(inst, target)
         end
@@ -49,7 +55,9 @@ local function MakeBuff(name, onattachedfn, onextendedfn, ondetachedfn, duration
             ondetachedfn(inst, target)
         end
 
-        target:PushEvent("foodbuffdetached", { buff = "ANNOUNCE_DETACH_BUFF_"..string.upper(name), priority = priority })
+        if announce then
+            target:PushEvent("foodbuffdetached", { buff = "ANNOUNCE_DETACH_BUFF_"..string.upper(name), priority = priority })
+        end
         inst:Remove()
     end
 
@@ -87,4 +95,5 @@ local function MakeBuff(name, onattachedfn, onextendedfn, ondetachedfn, duration
     return Prefab("buff_"..name, fn, nil, prefabs)
 end
 
-return MakeBuff("safeteleport", teleport_attach, nil, teleport_detach, total_day_time, 1)
+return MakeBuff("safeteleport", teleport_attach, nil, teleport_detach, TUNING.TOTAL_DAY_TIME, 1, nil, true),
+    MakeBuff("shadowprotect", shadow_attach, nil, shadow_detach, 6, 1)

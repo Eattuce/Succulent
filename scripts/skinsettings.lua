@@ -38,122 +38,97 @@
     linked_beard
     share_bigportrait_name
 ]]
---[[
-    instance =
-    {
-        base_prefab = "instance",
 
-        base_atlas = "images/inventoryimages/base.xml",
-        base_image = "base",
-        base_bank = "base",
-        base_build = "base",
-        base_anim = "idle",
-
-        altas = "images/inventoryimages/skin.xml",
-        image = "skin",
-        bank = "skin",
-        build = "skin",
-        anim = "idle",
-        namestring = STRINGS.SKIN_NAMES.INSTANCE
-    },
-]]
 local p = "images/inventoryimages/"
+
+local function FarmInitfn(inst, skin)
+    if inst.SetSkin ~= nil then
+        inst:SetSkin()
+    end
+end
+
+local function FarmClearfn(inst, skin)
+    if inst.SetBasic ~= nil then
+        inst:SetBasic()
+    end
+end
+
+
 return {
     medpot_spa =
     {
-        -- base
         base_prefab = "succulent_medpot",
-        base_atlas = p.."succulent_medpot.xml",
-        base_image = "succulent_medpot",
-        base_bank = "succulent_medpot",
-        base_build = "succulent_medpot",
-        base_anim = "idle",
-        -- base_loop = "idle",
-        -- rarity = "Elegant",
-
-        -- skin
+        basebank = "succulent_medpot",
+        baseanim = "idle",
+        bank = "medpot_sp",
+        build = "medpot_sp",
+        anim = "idle_a",
+        rarity = "Rainbow",
+        type = "item",
+        name = STRINGS.SKIN_NAMES.MEDPOT_SPA,
         altas = p.."medpot_spa.xml",
         image = "medpot_spa",
-        bank = "medpot_spa",
-        build = "medpot_spa",
+    },
+    medpot_spb =
+    {
+        base_prefab = "succulent_medpot",
+        basebank = "succulent_medpot",
+        baseanim = "idle",
+        bank = "medpot_sp",
+        build = "medpot_sp",
+        anim = "idle_b",
+        rarity = "Bottle",
+        type = "item",
+        name = STRINGS.SKIN_NAMES.MEDPOT_SPB,
+        altas = p.."medpot_spb.xml",
+        image = "medpot_spb",
+    },
+    medpot_spc =
+    {
+        base_prefab = "succulent_medpot",
+        basebank = "succulent_medpot",
+        baseanim = "idle",
+        bank = "medpot_sp",
+        build = "medpot_sp",
+        anim = "idle_c",
+        rarity = "Rose",
+        type = "item",
+        name = STRINGS.SKIN_NAMES.MEDPOT_SPC,
+        altas = p.."medpot_spc.xml",
+        image = "medpot_spc",
+    },
+    succulentfarm_sp =
+    {
+        base_prefab = "succulent_farm",
+        basebank = "succulent_farm",
+        baseanim = "idle",
+        bank = "succulentfarm_sp",
+        build = "succulentfarm_sp",
         anim = "idle",
-        namestring = STRINGS.SKIN_NAMES.MEDPOT_SPA
-        -- loop = "",
-
-        -- custom_init_fn = "",
-        -- custom_clear_fn = "",
+        rarity = "Bottle",
+        type = "item",
+        name = STRINGS.SKIN_NAMES.SUCCULENTFARM_SP,
+        altas = p.."succulentfarm_sp.xml",
+        image = "succulentfarm_sp",
+        init_fn = FarmInitfn,
+        clear_fn = FarmClearfn,
     },
-    largepot_forma =
+    succulent_largepot_sp =
     {
         base_prefab = "succulent_largepot",
-
-        base_atlas = p.."succulent_largepot.xml",
-        base_image = "succulent_largepot",
-        base_bank = "succulent_farm",
-        base_build = "succulent_farm",
-        base_anim = "plant_4_idle",
-
-        -- altas = p.."largepot_forma.xml",
-        image = "largepot_forma",
-        bank = "succulent_farm",
-        build = "succulent_farm",
-        anim = "plant_1",
-        push = "plant_1_idle",
-        namestring = STRINGS.SKIN_NAMES.LARGEPOT_FORMA
+        basebank = "succulent_farm",
+        basebuild = "succulent_farm",
+        baseanim = "plant_4_idle",
+        bank = "succulentfarm_sp",
+        build = "succulentfarm_sp",
+        anim = "plant_4_idle",
+        rarity = "Bottle",
+        type = "item",
+        name = STRINGS.SKIN_NAMES.SUCCULENTFARM_SP,
+        altas = p.."succulent_largepot_sp.xml",
+        image = "succulent_largepot_sp",
+        init_fn = FarmInitfn,
+        clear_fn = FarmClearfn,
     },
-    largepot_formb =
-    {
-        base_prefab = "succulent_largepot",
-
-        base_atlas = p.."succulent_largepot.xml",
-        base_image = "succulent_largepot",
-        base_bank = "succulent_farm",
-        base_build = "succulent_farm",
-        base_anim = "plant_4_idle",
-
-        -- altas = p.."largepot_formb.xml",
-        image = "largepot_formb",
-        bank = "succulent_farm",
-        build = "succulent_farm",
-        anim = "plant_2",
-        push = "plant_2_idle",
-        namestring = STRINGS.SKIN_NAMES.LARGEPOT_FORMB,
-    },
-    largepot_formc =
-    {
-        base_prefab = "succulent_largepot",
-
-        base_atlas = p.."succulent_largepot.xml",
-        base_image = "succulent_largepot",
-        base_bank = "succulent_farm",
-        base_build = "succulent_farm",
-        base_anim = "plant_4_idle",
-
-        -- altas = p.."largepot_formc.xml",
-        image = "largepot_formc",
-        bank = "succulent_farm",
-        build = "succulent_farm",
-        anim = "plant_3",
-        push = "plant_3_idle",
-        namestring = STRINGS.SKIN_NAMES.LARGEPOT_FORMC,
-    },
-
-    -- instance =
-    -- {
-    --     base_prefab = "instance",
-
-    --     base_atlas = p.."base.xml",
-    --     base_image = "base",
-    --     base_bank = "base",
-    --     base_build = "base",
-    --     base_anim = "idle",
-
-    --     altas = p.."skin.xml",
-    --     image = "skin",
-    --     bank = "skin",
-    --     build = "skin",
-    --     anim = "idle",
-    --     namestring = STRINGS.SKIN_NAMES.INSTANCE
-    -- },
 
 }

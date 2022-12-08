@@ -27,7 +27,7 @@ local function ondropped(inst)
             end
         end
     end
-
+    inst.AnimState:SetTime(math.random() * inst.AnimState:GetCurrentAnimationLength())
 end
 
 local function onworked(inst, worker)
@@ -36,7 +36,7 @@ local function onworked(inst, worker)
         worker.SoundEmitter:PlaySound("dontstarve/common/butterfly_trap")
     end
     local x, y, z = inst.Transform:GetWorldPosition()
-    for _, v in pairs(TheSim:FindEntities(x, y, z, 1, {"dewdrop"})) do
+    for _, v in pairs(TheSim:FindEntities(x, y, z, 2, {"dewdrop"})) do
         if v.entity:IsVisible() and worker.components.inventory ~= nil then
             worker.components.inventory:GiveItem(v, nil, inst:GetPosition())
         end
@@ -69,12 +69,13 @@ local function fn()
     inst.entity:AddTransform()
     inst.entity:AddAnimState()
     inst.entity:AddNetwork()
-    inst.entity:AddPhysics()
+    -- inst.entity:AddPhysics()
     inst.entity:AddLight()
     inst.entity:AddDynamicShadow()
     inst.entity:AddSoundEmitter()
 
     -- MakeInventoryPhysics(inst)  -- 注释掉就不会被船影响
+    MakeFlyingCharacterPhysics(inst, 1, 0.1)
 
     inst.AnimState:SetBank("dewdrop")
     inst.AnimState:SetBuild("dewdrop")
@@ -82,13 +83,14 @@ local function fn()
     inst.AnimState:OverrideSymbol("swap_food", "dewdrop", "dewdrop")
 
     inst:AddTag("flying")
+    inst:AddTag("dewdrop")
+    inst:AddTag("NOBLOCK")
+    inst:AddTag("fuel_wet_bonus")
     inst:AddTag("ignorewalkableplatforms")
     inst:AddTag("ignorewalkableplatformdrowning")
 
-
     inst.DynamicShadow:Enable(false)
     inst.DynamicShadow:SetSize(.8, .5)
-
 
     --light--
     inst.Light:SetColour(146/255, 225/255, 146/255)
@@ -98,10 +100,6 @@ local function fn()
     inst.Light:Enable(false)
     ---------
     inst.AnimState:SetBloomEffectHandle("shaders/anim.ksh")
-
-    inst:AddTag("dewdrop")
-
-    -- MakeInventoryFloatable(inst, "small", 0.05, 0.8)
 
     inst.entity:SetPristine()
 
@@ -115,9 +113,7 @@ local function fn()
 
     inst:AddComponent("inspectable")
 
-    inst:AddComponent("knownlocations")
     inst:AddComponent("tradable")
-
 
     inst:AddComponent("inventoryitem")
     inst.components.inventoryitem.imagename = "dewdrop"
@@ -131,15 +127,13 @@ local function fn()
 
     inst:AddComponent("fuel")
     inst.components.fuel.fueltype = FUELTYPE.MAGIC
-    inst.components.fuel.fuelvalue = 16*TUNING.LARGE_FUEL
-
+    inst.components.fuel.fuelvalue = TUNING.LARGE_FUEL -- 6*seg_time
 
     MakeHauntableLaunchAndSmash(inst)
 
     inst:ListenForEvent("onputininventory", OnPutInInventory)
     inst:ListenForEvent("ondropped", ondropped)
     -- inst:WatchWorldState("isnight", OnIsNight)
-
 
     inst.OnLoad = onload
 

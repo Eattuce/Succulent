@@ -10,7 +10,11 @@ local function OnTimerDone(inst, data)
         local totem = SpawnPrefab("totem_real")
         inst.components.entitytracker:TrackEntity("totem_real", totem)
         inst:ListenForEvent("disappear", inst._ontotem_disappear, totem)
+
+        totem.AnimState:OverrideMultColour(0, 0, 0, 0)
         totem.Transform:SetPosition(inst.Transform:GetWorldPosition())
+        totem:PushEvent("appear", totem)
+        totem:PushEvent("gradualfade_in")
     end
 end
 
@@ -86,6 +90,18 @@ local function OnLoadPostPass(inst)--, ents, data)
     end
 end
 
+local function RegisterToBottleManager(inst)
+    if TheWorld.components.messagebottlemanager ~= nil then
+        TheWorld.components.messagebottlemanager.totem = inst
+    end
+end
+
+local function RegisterPlayer(inst, player)
+    if TheWorld.components.messagebottlemanager ~= nil then
+        TheWorld.components.messagebottlemanager:SetPlayerHasFoundTotem(player)
+    end
+end
+
 local function fn()
     local inst = CreateEntity()
 
@@ -96,6 +112,13 @@ local function fn()
 
     inst:AddComponent("timer")
     inst:AddComponent("entitytracker")
+
+    --------------------
+    -- inst:AddComponent("playerprox")
+    -- inst.components.playerprox:SetDist(5,10)
+    -- inst.components.playerprox:SetOnPlayerNear(RegisterPlayer)
+    -- -- inst.components.playerprox:SetOnPlayerFar(fn)
+
 
     inst:DoTaskInTime(0, OnInit)
 
@@ -110,6 +133,7 @@ local function fn()
         end
     end
 
+    -- RegisterToBottleManager(inst)
     return inst
 end
 

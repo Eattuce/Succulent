@@ -51,10 +51,9 @@ local function MakePreparedFood(data)
 
             inst:AddTag("spicedfood")
 
-            --设置作为背景的料理图
             inst.inv_image_bg = { atlas = "images/inventoryimages/"..realname..".xml", image = realname..".tex" }
         else
-            inst.AnimState:SetBuild(realname)   --对于mod菜品，只能是一种菜品一个动画文件，所有名字全为该菜品的名字
+            inst.AnimState:SetBuild(realname)
             inst.AnimState:SetBank(realname)
         end
         inst.AnimState:PlayAnimation("idle")
@@ -74,15 +73,14 @@ local function MakePreparedFood(data)
             end
         end
 
-        if data.float ~= nil then
-            MakeInventoryFloatable(inst, data.float[2], data.float[3], data.float[4])
-            if data.float[1] ~= nil then
-                local OnLandedClient_old = inst.components.floater.OnLandedClient
-                inst.components.floater.OnLandedClient = function(self)
-                    OnLandedClient_old(self)
-                    self.inst.AnimState:SetFloatParams(data.float[1], 1, self.bob_percent)
-                end
-            end
+        if data.floater ~= nil then
+            MakeInventoryFloatable(inst, data.floater[1], data.floater[2], data.floater[3])
+        else
+            MakeInventoryFloatable(inst)
+        end
+
+        if data.common_postinit ~= nil then
+            data.common_postinit(inst)
         end
 
         inst.entity:SetPristine()
@@ -103,25 +101,15 @@ local function MakePreparedFood(data)
         inst.components.edible.spice = data.spice
         inst.components.edible:SetOnEatenFn(data.oneatenfn)
 
-        if realname == "ppf_greentongue" then
-            inst.components.edible.degrades_with_spoilage = false
-        end
-
         inst:AddComponent("inspectable")
         inst.wet_prefix = data.wet_prefix
 
         inst:AddComponent("inventoryitem")
         inst.components.inventoryitem.imagename = realname
-        if spicename ~= nil then --官方调料过的料理
+        if spicename ~= nil then
             inst.components.inventoryitem:ChangeImageName(spicename.."_over")
-        -- elseif data.basename ~= nil then --不想用官方调料贴图的调料过的料理
-        --     inst.components.inventoryitem:ChangeImageName(data.basename)
-        else --普通料理
-            --因为作为前景图的香料是官方的，所以只有这里需要设置自己的料理atlas
+        else
             inst.components.inventoryitem.atlasname = "images/inventoryimages/"..realname..".xml"
-        end
-        if data.float == nil then
-            inst.components.inventoryitem:SetSinks(true)
         end
 
         inst:AddComponent("stackable")
@@ -138,11 +126,7 @@ local function MakePreparedFood(data)
             end
 		end
 
-        if realname == "ppf_greentongue" then
-            inst:AddTag("frozen")
-        end
-
-        --MakeSmallBurnable(inst) --可点燃
+        MakeSmallBurnable(inst)
         MakeSmallPropagator(inst)
 
         MakeHauntableLaunchAndPerish(inst)
@@ -150,6 +134,10 @@ local function MakePreparedFood(data)
         inst:AddComponent("bait")
 
         inst:AddComponent("tradable")
+
+        if data.master_postinit ~= nil then
+            data.master_postinit(inst)
+        end
 
         return inst
     end

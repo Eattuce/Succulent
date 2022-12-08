@@ -1,21 +1,23 @@
 
 local L = locale ~= "zh" and locale ~= "zhr" --true-英文; false-中文
+local date = "2022/12/1"
 
 name = L and "Succulent plant" or "多肉植物!"
 author = "码：生菜  画：灰色代表作"
-version = "3.0"
+version = "4.7.4"
 description =
     L
-    and version.."Local Tests"
-    or version.."本地测试"
---个人网址
+    and version.."   "..date.."\n  - Replaced the animations of Rock Chest with low quality animations for now\n"
+    or version.."   "..date.."\n  - 暂时用比较生草的动画替代了沙石箱子的动画以避免和樱花林产生的动画错误，有时间会修复\n"
+
 forumthread = nil
 
 --lua版本，单机写6，联机写10
 api_version = 10
 
 --mod加载的优先级，不写就默认为0，越大越优先加载
-priority = -1000
+-- ShowMe(Origin) Workshop ID - 666155465 (0.00666155465) Needs to be larger than it
+priority = 0.02441790846
 
 -- Compatible with Don't Starve Together
 dst_compatible = true
@@ -58,22 +60,22 @@ configuration_options =
         hover = "Choose your language", -- hover是鼠标指向选项时会显示更详细的信息
         options =
         {
-            {description = "Auto(Default)", data = "auto"},
-            {description = "English", data = "english"},
+            -- {description = "Auto(Default)", data = "auto"},
+            {description = "English(Default)", data = "english"},
             {description = "中文", data = "chinese"},
         },
-        default = "auto",
+        default = "english",
     } or {
         name = "Language",
         label = "设置语言",
         hover = "设置mod语言",
         options =
         {
-            {description = "自动(默认)", data = "auto"},
+            -- {description = "自动(默认)", data = "auto"},
             {description = "English", data = "english"},
-            {description = "中文", data = "chinese"},
+            {description = "中文(默认)", data = "chinese"},
         },
-        default = "auto",
+        default = "chinese",
     },
 
     Title(""),
@@ -101,25 +103,51 @@ configuration_options =
     },
 
     Title(""),
-    Title(L and "Extensible Oasis Range" or "绿洲范围可扩大"),
+    Title(L and "Succulent planter or" or "建造多肉农场/大型多肉盆栽"),
+    Title(L and "Potted Succulent(Large)" or ""),
     L and {
-        name = "oasis",
-        label = "Try it",
-        hover = "Plant trees around oasis to extend the sandstorm-free zone",
+        name = "farm_deco",
+        label = "Succulent planter/Potted Succulent(Large)",
+        hover = "Succulent planter and Potted Succulent(Large) looks the same, to identify between they two",
         options =
         {
-            {description = "True(Default)", data = true},
-            {description = "False", data = false},
+            {description = "Both", data = "both"},
+            {description = "Planter(Default)", data = "farm"},
+            {description = "Deco", data = "deco"},
+        },
+        default = "farm",
+    } or {
+        name = "farm_deco",
+        label = "多肉农场/大型多肉盆栽",
+        hover = "它们看起来一样, 为了方便区分, 选择一个加入建造栏",
+        options =
+        {
+            {description = "都要", data = "both"},
+            {description = "农场(默认)", data = "farm"},
+            {description = "盆栽", data = "deco"},
+        },
+        default = "farm",
+    },
+    Title(""),
+    Title(L and "Emerald staff settings" or "翠榴法杖设置"),
+    L and {
+        name = "staff",
+        label = "Product",
+        hover = "What makes Emerald Staff creats different flowers",
+        options =
+        {
+            {description = "Season", data = false},
+            {description = "Day(Default)", data = true},
         },
         default = true,
     } or {
-        name = "oasis",
-        label = "尝试一下",
-        hover = "在绿洲附近种树可以扩大不受夏天沙尘暴影响的范围",
+        name = "staff",
+        label = "产生的植物",
+        hover = "什么条件决定产出",
         options =
         {
-            {description = "开启(默认)", data = true},
-            {description = "关闭", data = false},
+            {description = "季节", data = false},
+            {description = "一天里的时间(默认)", data = true},
         },
         default = true,
     },

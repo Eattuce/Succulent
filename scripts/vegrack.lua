@@ -17,7 +17,7 @@ local veggies =
     "tomato",
     "potato",
     "asparagus",
-    "onion",
+    -- "onion",
     -- "garlic",
     -- "pepper",
 }
@@ -34,13 +34,10 @@ for _,veggie in pairs(veggies) do
     end)
 end
 
-local function DryerModify(Dryer)
-    local OldCanDry = Dryer.CanDry
-    local _CanDry = function (dryable)
-        return Dryer.product == nil and dryable ~= nil and dryable.components.dryable ~= nil
-    end
-    function Dryer:CanDry(dryable)
-        return _CanDry(dryable) and (self.inst:HasTag("vegrack") and dryable:HasTag("dryableveg") or not dryable:HasTag("dryableveg") ) or false
+local function DryerModify(self)
+    local _CanDry = self.CanDry
+    function self:CanDry(dryable)
+        return _CanDry(self, dryable) and (self.inst:HasTag("vegrack") and dryable:HasTag("dryableveg") or not dryable:HasTag("dryableveg") ) or false
     end
 end
 

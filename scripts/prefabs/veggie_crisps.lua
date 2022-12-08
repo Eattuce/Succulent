@@ -20,6 +20,11 @@ local function fn()
     inst.AnimState:PlayAnimation("idle")
     inst.AnimState:SetScale(1.4,1.4,1.4)
 
+    inst:AddTag("show_spoilage")
+    inst:AddTag("veggie_crisps")
+    -- inst:AddTag("AlawysShowSpoilage")
+    -- inst.always_spoilage_colour = 0
+
     MakeInventoryFloatable(inst, "small", 0.05, 0.9)
 
     inst.entity:SetPristine()
@@ -33,22 +38,20 @@ local function fn()
     inst:AddComponent("stackable")
     inst.components.stackable.maxsize = TUNING.STACK_SIZE_MEDITEM
 
-    -- inst:AddComponent("perishable")
-    -- inst.components.perishable:SetPerishTime(999)
-    -- inst.components.perishable:StopPerishing()
+    inst:AddComponent("perishable")
+    inst.components.perishable:SetPerishTime(TUNING.PERISH_SUPERSLOW)
+    inst.components.perishable.onperishreplacement = "veggie_crisps"
 
     inst:AddComponent("inspectable")
 
     inst:AddComponent("inventoryitem")
 
     inst:AddComponent("edible")
-    -- inst.components.edible.healthvalue = 25
-    -- inst.components.edible.hungervalue = 15
-    -- inst.components.edible.sanityvalue = 20
     inst.components.edible.healthvalue = TUNING.HEALING_MED
     inst.components.edible.hungervalue = TUNING.CALORIES_MED
     inst.components.edible.sanityvalue = TUNING.SANITY_MED
     inst.components.edible.foodtype = FOODTYPE.VEGGIE
+    inst.components.edible.degrades_with_spoilage = false
 
     return inst
 end
