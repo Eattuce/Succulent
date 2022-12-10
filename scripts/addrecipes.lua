@@ -188,7 +188,7 @@ AddCharacterRecipe("treasurechest_succulent",   {Ingredient("cutstone", 10), Ing
 
 
 -- Construction Plans
-CONSTRUCTION_PLANS["totem"] = { Ingredient("twigs", 1)--[[ , Ingredient("cutgrass", 1), Ingredient("fig", 1), Ingredient("flint", 1), Ingredient("guano", 1) ]] }
+CONSTRUCTION_PLANS["totem"] = { Ingredient("succulent_picked", 3), Ingredient("cutgrass", 1), Ingredient("twigs", 1) }
 CONSTRUCTION_PLANS["totem_construction1"] = { Ingredient("twigs", 1)--[[ , Ingredient("cutgrass", 1), Ingredient("fig", 1), Ingredient("flint", 1), Ingredient("guano", 1) ]] }
 CONSTRUCTION_PLANS["totem_construction2"] = { Ingredient("twigs", 1)--[[ , Ingredient("cutgrass", 1), Ingredient("fig", 1), Ingredient("flint", 1), Ingredient("guano", 1) ]] }
 CONSTRUCTION_PLANS["totem_construction3"] = { Ingredient("twigs", 1)--[[ , Ingredient("cutgrass", 1), Ingredient("fig", 1), Ingredient("flint", 1), Ingredient("guano", 1) ]] }

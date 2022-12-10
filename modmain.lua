@@ -114,6 +114,8 @@ Assets =
     Asset("IMAGE", impath.."dug_thistle_bush.tex"),
     Asset("ATLAS", impath.."dug_thistle_bush.xml"),
 
+    Asset("ANIM", "anim/ui_construction_5x1.zip"),
+
 }
 
 --------------------------------------------------------------------------

@@ -137,8 +137,8 @@ end
 -- 可升级界面
 params.totem_construction_container = deepcopy(params.construction_container)
 params.totem_construction_container.widget.slotpos = {}
-params.totem_construction_container.widget.animbank = "ui_succulentchest_5x5"
-params.totem_construction_container.widget.animbuild = "ui_succulentchest_5x5" -- ui_construction_4x1
+params.totem_construction_container.widget.animbank = "ui_construction_5x1"
+params.totem_construction_container.widget.animbuild = "ui_construction_5x1" -- ui_construction_4x1
 for x = -2, 2, 1 do
     table.insert(params.totem_construction_container.widget.slotpos, Vector3(x * 110, 8, 0))
 end

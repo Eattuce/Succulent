@@ -1,19 +1,31 @@
 local assets =
 {
-    Asset("ANIM", "anim/totem2.zip"),
+    Asset("ANIM", "anim/totem_placer_idle.zip"),
     Asset("ANIM", "anim/floating_rock_build.zip"),
     Asset("IMAGE", "images/inventoryimages/totem_item.tex"),
     Asset("ATLAS", "images/inventoryimages/totem_item.xml"),
+    Asset("ANIM", "anim/totem_lv0.zip"),
+    Asset("ANIM", "anim/totem_lv1.zip"),
+    Asset("ANIM", "anim/totem_lv2.zip"),
+    Asset("ANIM", "anim/totem_lv3.zip"),
+    Asset("ANIM", "anim/totem_lv4.zip"),
+    Asset("ANIM", "anim/totem_lv5.zip"),
+    Asset("ANIM", "anim/totem_lv6.zip"),
+    Asset("ANIM", "anim/totem_lv7.zip"),
+    Asset("ANIM", "anim/totem_lv8.zip"),
+
 }
 
 local prefabs =
 {
+    "totem_lowervine",
+    "totem_uppervine",
     "totem_floatingrock",
     "totem_vine",
     "collapse_small",
 }
 
-local construction_data = {
+local Construction_data = {
 	{level = 0, name = "totem", construction_product = "totem_construction1" },
 	{level = 1, name = "totem_construction1", construction_product = "totem_construction2" },
 	{level = 2, name = "totem_construction2", construction_product = "totem_construction3" },
@@ -35,7 +47,8 @@ local function OnConstructed(inst, doer)
 
 	if concluded then
         local new_structure = ReplacePrefab(inst, inst._construction_product)
-        new_structure.AnimState:PlayAnimation("idle_bone_"..new_structure.level, true)
+        new_structure.AnimState:PlayAnimation("idle_3", true)
+        new_structure.AnimState:SetTime(inst.AnimState:GetCurrentAnimationTime() % inst.AnimState:GetCurrentAnimationLength())
 
         if inst.rock1 ~= nil then
             new_structure.rock1.AnimState:SetTime(inst.rock1.AnimState:GetCurrentAnimationTime() % inst.rock1.AnimState:GetCurrentAnimationLength())
@@ -50,7 +63,7 @@ local function OnConstructed(inst, doer)
 end
 
 local function onconstruction_built(inst)
-    PreventCharacterCollisionsWithPlacedObjects(inst)
+    -- PreventCharacterCollisionsWithPlacedObjects(inst)
     -- inst.level = 0
     -- inst.SoundEmitter:PlaySound("hookline_2/characters/hermit/house/stage".. inst.level.."_place")
 end
@@ -64,7 +77,11 @@ local function OnWorkFinished(inst, worker)
     inst:Remove()
 end
 
-local function MakeTotem(name, client_postinit, master_postinit, construction_data)
+local function onload( inst )
+    inst.AnimState:SetTime(math.random() * inst.AnimState:GetCurrentAnimationLength())
+end
+
+local function MakeTotem(name, client_postinit, master_postinit, construction_data, bb)
     local function fn()
         local inst = CreateEntity()
 
@@ -75,9 +92,9 @@ local function MakeTotem(name, client_postinit, master_postinit, construction_da
 
         MakeObstaclePhysics(inst, 0.3)
 
-        inst.AnimState:SetBank("totem")
-        inst.AnimState:SetBuild("totem2")
-        inst.AnimState:PlayAnimation("idle_bone_8", true)
+        inst.AnimState:SetBank("totem_lv"..bb)
+        inst.AnimState:SetBuild("totem_lv"..bb)
+        inst.AnimState:PlayAnimation("idle_3", true)
 
         inst:AddTag("structure")
         inst:AddTag("totem")
@@ -89,8 +106,7 @@ local function MakeTotem(name, client_postinit, master_postinit, construction_da
         end
 
 		if construction_data then
-            -- inst.AnimState:PlayAnimation("idle_stage"..(construction_data.level), true)
-            inst.AnimState:PlayAnimation("idle_bone_"..inst.level, true)
+            inst.AnimState:PlayAnimation("idle_3", true)
 			inst:AddTag("constructionsite")
 		end
 
@@ -100,11 +116,13 @@ local function MakeTotem(name, client_postinit, master_postinit, construction_da
             return inst
         end
 
+        inst.AnimState:SetDeltaTimeMultiplier(0.8)
+
         if construction_data then
 			inst._construction_product = construction_data.construction_product
 
 			inst:AddComponent("constructionsite")
-			inst.components.constructionsite:SetConstructionPrefab("construction_container")
+			inst.components.constructionsite:SetConstructionPrefab("totem_construction_container")
 			inst.components.constructionsite:SetOnConstructedFn(OnConstructed)
 		end
 
@@ -115,7 +133,7 @@ local function MakeTotem(name, client_postinit, master_postinit, construction_da
 
             inst.vine = SpawnPrefab("totem_vine")
             inst.vine.entity:SetParent(inst.entity)
-            inst.vine.Follower:FollowSymbol(inst.GUID, "12", 42, -140, 0)
+            inst.vine.Follower:FollowSymbol(inst.GUID, "high", 40, -90, 0)
         end
         if inst.level >= 4 then
             inst.rock2 = SpawnPrefab("totem_floatingrock")
@@ -123,6 +141,11 @@ local function MakeTotem(name, client_postinit, master_postinit, construction_da
             inst.rock2.AnimState:SetFinalOffset(-1)
             inst.rock2.entity:SetParent(inst.entity)
             inst.rock2.Follower:FollowSymbol(inst.GUID, "shadow", -520, -830, 0)
+
+            inst.uppervine = SpawnPrefab("totem_uppervine")
+            inst.uppervine.entity:SetParent(inst.entity)
+            inst.uppervine.Follower:FollowSymbol(inst.GUID, "high", 50, -100, 0)
+            inst.uppervine.AnimState:SetFinalOffset(-1)
         end
         if inst.level >= 5 then
             inst.rock3 = SpawnPrefab("totem_floatingrock")
@@ -131,8 +154,15 @@ local function MakeTotem(name, client_postinit, master_postinit, construction_da
             inst.rock3.Follower:FollowSymbol(inst.GUID, "shadow", 360, -900, 0)
 
             inst.rock2.AnimState:OverrideSymbol("rock", "floating_rock_build", "rock5")
-        end
 
+            inst.lowervine = SpawnPrefab("totem_lowervine")
+            inst.lowervine.entity:SetParent(inst.entity)
+            inst.lowervine.Follower:FollowSymbol(inst.GUID, "high", -52, 220, 0)
+            inst.lowervine.AnimState:SetFinalOffset(-1)
+        end
+        if inst.level >= 7 then
+            inst.lowervine.AnimState:PlayAnimation("idle_2")
+        end
         if inst.level >= 8 then
             inst.rock1.AnimState:OverrideSymbol("rock", "floating_rock_build", "rock1")
             inst.rock2.AnimState:OverrideSymbol("rock", "floating_rock_build", "rock6")
@@ -150,6 +180,7 @@ local function MakeTotem(name, client_postinit, master_postinit, construction_da
         inst.components.workable:SetOnFinishCallback(OnWorkFinished)
 
         inst:ListenForEvent("onbuilt", onconstruction_built)
+        inst.OnLoadPostPass = onload
 
         return inst
     end
@@ -160,11 +191,11 @@ end
 
 
 local ret = {}
-table.insert(ret, MakeTotem("totem_construction8"))
-for i = 1, #construction_data do
-	table.insert(ret, MakeTotem(construction_data[i].name, nil, nil, construction_data[i]))
+table.insert(ret, MakeTotem("totem_construction8", nil, nil, nil, "8"))
+for i = 1, #Construction_data do
+	table.insert(ret, MakeTotem(Construction_data[i].name, nil, nil, Construction_data[i], Construction_data[i].level))
 end
-table.insert(ret, MakePlacer("totem_item_placer", "totem", "totem2", "idle_bone_0"))
+table.insert(ret, MakePlacer("totem_item_placer", "totem", "totem_placer_idle", "idle"))
 
 return unpack(ret)
 
