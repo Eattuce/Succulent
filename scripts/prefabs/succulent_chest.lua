@@ -11,17 +11,21 @@ local assets =
 local prefabs = {"collapse_small"}
 
 local function onopen(inst)
+    if inst._snow then inst._snow:Hide() end
     inst.AnimState:PlayAnimation("open")
     inst.SoundEmitter:PlaySound("succulent_chest/chest/open")
 end
 
 local function onclose(inst)
+    if inst._snow then inst._snow:Show() end
     inst.AnimState:PlayAnimation("close")
     inst.AnimState:PushAnimation("closed", false)
     inst.SoundEmitter:PlaySound("succulent_chest/chest/close")
 end
 
 local function onhammered(inst, worker)
+    if inst._snow then inst._snow:Show() end
+
     inst.components.lootdropper:DropLoot()
     if inst.components.container ~= nil then
         inst.components.container:DropEverything()
@@ -42,11 +46,20 @@ local function onhit(inst, worker)
 end
 
 local function onbuilt(inst)
-    -- inst.AnimState:PlayAnimation("place")
-    inst.AnimState:PlayAnimation("closed", false)
+    inst.AnimState:PlayAnimation("place")
+    inst.AnimState:PushAnimation("closed", false)
     -- inst.SoundEmitter:PlaySound("dontstarve/common/chest_craft")
     inst.SoundEmitter:PlaySound("dontstarve/common/place_structure_stone")
+end
 
+local function onanimover(inst)
+    if inst._snow == nil then
+        if inst.AnimState:IsCurrentAnimation("closed") then
+            inst._snow = SpawnPrefab("succulentchest_snow")
+            inst._snow.entity:SetParent(inst.entity)
+            inst._snow.Follower:FollowSymbol(inst.GUID, "chest01", 0, 0, 0)
+        end
+    end
 end
 
 local function fn()
@@ -64,7 +77,7 @@ local function fn()
     inst:AddTag("structure")
     inst:AddTag("chest")
 
-    inst.AnimState:SetBank("succulent_chest")
+    inst.AnimState:SetBank("chest")
     inst.AnimState:SetBuild("treasurechest_succulent")
     inst.AnimState:PlayAnimation("closed")
     -- inst.AnimState:SetFinalOffset(1)
@@ -97,6 +110,7 @@ local function fn()
     inst.components.hauntable:SetHauntValue(TUNING.HAUNT_TINY)
 
     inst:ListenForEvent("onbuilt", onbuilt)
+    inst.ListenForEvent("animover", onanimover)
 
     return inst
 end

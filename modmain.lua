@@ -39,7 +39,9 @@ PrefabFiles =
     "container_prefab",
 
     "totem_construction",
-    "totem_floatingrock",
+    "totem_deco",
+
+    "extrasnowprefab",
 }
 
 Assets =
@@ -337,10 +339,13 @@ local function Chandelier_FadeOut(inst)
         -- TheNet:Announce("Out")
     end
 end
-
+local function SetTransParent(inst)
+    inst.AnimState:OverrideMultColour(0, 0, 0, 0)
+end
 
 AddClientModRPCHandler("Succulent_RPC", "Chandelier_FadeIn", Chandelier_FadeIn)
 AddClientModRPCHandler("Succulent_RPC", "Chandelier_FadeOut", Chandelier_FadeOut)
+AddClientModRPCHandler("Succulent_RPC", "Chandelier_Transparent", SetTransParent)
 
 
 -- ShowMe(Origin) Workshop ID - 666155465

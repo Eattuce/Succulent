@@ -77,6 +77,12 @@ local function OnWorkFinished(inst, worker)
     inst:Remove()
 end
 
+local function AddFollowSymbol(inst, child, symbol, x, y, z)
+    child.entity:SetParent(inst.entity)
+    child.Follower:FollowSymbol(inst.GUID, symbol, x, y, z)
+    return child
+end
+
 local function onload( inst )
     inst.AnimState:SetTime(math.random() * inst.AnimState:GetCurrentAnimationLength())
 end
@@ -116,6 +122,8 @@ local function MakeTotem(name, client_postinit, master_postinit, construction_da
             return inst
         end
 
+---------------------------------------------
+
         inst.AnimState:SetDeltaTimeMultiplier(0.8)
 
         if construction_data then
@@ -126,26 +134,20 @@ local function MakeTotem(name, client_postinit, master_postinit, construction_da
 			inst.components.constructionsite:SetOnConstructedFn(OnConstructed)
 		end
 
-        if inst.level >= 3 then
-            inst.rock1 = SpawnPrefab("totem_floatingrock")
-            inst.rock1.entity:SetParent(inst.entity)
-            inst.rock1.Follower:FollowSymbol(inst.GUID, "shadow", 400, -420, 0)
 
-            inst.vine = SpawnPrefab("totem_vine")
-            inst.vine.entity:SetParent(inst.entity)
-            inst.vine.Follower:FollowSymbol(inst.GUID, "high", 40, -90, 0)
+        AddFollowSymbol(inst, SpawnPrefab("totem_snow"), "high", 0, 0, 0).AnimState:SetFinalOffset(1)
+
+        if inst.level >= 3 then
+            inst.rock1 = AddFollowSymbol(inst, SpawnPrefab("totem_floatingrock"), "shadow", 400, -420, 0)
+
+            AddFollowSymbol(inst, SpawnPrefab("totem_vine"), "high", 40, -90, 0)
         end
         if inst.level >= 4 then
-            inst.rock2 = SpawnPrefab("totem_floatingrock")
+            inst.rock2 = AddFollowSymbol(inst, SpawnPrefab("totem_floatingrock"), "shadow", -520, -830, 0)
             inst.rock2.AnimState:OverrideSymbol("rock", "floating_rock_build", "rock4")
             inst.rock2.AnimState:SetFinalOffset(-1)
-            inst.rock2.entity:SetParent(inst.entity)
-            inst.rock2.Follower:FollowSymbol(inst.GUID, "shadow", -520, -830, 0)
 
-            inst.uppervine = SpawnPrefab("totem_uppervine")
-            inst.uppervine.entity:SetParent(inst.entity)
-            inst.uppervine.Follower:FollowSymbol(inst.GUID, "high", 50, -100, 0)
-            inst.uppervine.AnimState:SetFinalOffset(-1)
+            AddFollowSymbol(inst, SpawnPrefab("totem_uppervine"), "high", 50, -100, 0).AnimState:SetFinalOffset(-1)
         end
         if inst.level >= 5 then
             inst.rock3 = SpawnPrefab("totem_floatingrock")

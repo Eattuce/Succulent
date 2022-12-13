@@ -13,6 +13,11 @@ local GradualFader = Class(function(self, inst)
     self.inst:ListenForEvent("gradualfade_out", _fadeout)
 end)
 
+function GradualFader:SetTransParent(alpha)
+    local _alpha = alpha or 0
+    self.inst.AnimState:OverrideMultColour(_alpha, _alpha, _alpha, _alpha)
+end
+
 function GradualFader:FadeIn()
     self:SetMode("IN")
     self:StartUpdating()

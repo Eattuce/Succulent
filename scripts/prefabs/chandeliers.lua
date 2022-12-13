@@ -16,17 +16,13 @@ local FADE_INTENSITY = .8
 local FADE_FALLOFF = .7
 local LIGHTRADIUS = 6
 
-local function Reveal(inst)
-    if not TheWorld.state.isday then
-        inst:StopWatchingWorldState("isday", Reveal)
+
+local function CheckDay(inst)
+    if TheWorld.state.isday then
+        if inst._light then inst._light:Hide() end
+        if inst._sparklet then inst._sparklet:Hide() end
     end
 end
-
-local function HideForSomeTime(inst)
-    inst:Hide()
-    inst:WatchWorldState("isday", Reveal)
-end
-
 
 local function OnUpdateFade(inst)
     local k
@@ -141,32 +137,16 @@ local function OnLoad(inst)
 
     if TheWorld.state.isday then
         FadeOut(inst, true)
-        if inst._light then
-            HideForSomeTime(inst._light)
-        end
-        if inst._sparklet then
-            HideForSomeTime(inst._sparklet)
-        end
+        if inst._light then inst._light:Hide() end
+        if inst._sparklet then inst._sparklet:Hide() end
     else
         FadeIn(inst, true)
     end
 end
 
 local function onbuilt(inst)
-    inst.AnimState:PlayAnimation("place")
-    inst.AnimState:PushAnimation("sway_pre", false)
-    inst.AnimState:PushAnimation("idle_sway")
-    if TheWorld.state.isday then
-        if inst._light then
-            HideForSomeTime(inst._light)
-        end
-        if inst._sparklet then
-            HideForSomeTime(inst._sparklet)
-        end
-    end
-
     local function animover()
-        if inst.AnimState:IsCurrentAnimation("sway_pre") then
+        if inst.AnimState:IsCurrentAnimation("idle_sway") then
             if inst._sparklet then
                 if not TheWorld.state.isday then
                     inst._sparklet:Show()
@@ -245,7 +225,8 @@ local function fn()
 
 	inst.AnimState:SetBank("rock_chandelier")
     inst.AnimState:SetBuild("rock_chandelier")
-	inst.AnimState:PlayAnimation("idle_sway", true)
+    inst.AnimState:PlayAnimation("place")
+    inst.AnimState:PushAnimation("idle_sway")
     inst.AnimState:SetScale(2,2,2)
     inst.AnimState:SetFinalOffset(0)
 
@@ -264,18 +245,23 @@ local function fn()
         return inst
     end
 
+    inst.AnimState:SetDeltaTimeMultiplier(0.8)
     inst.AnimState:SetTime(math.random() * inst.AnimState:GetCurrentAnimationLength())
 
     inst._light = SpawnPrefab("chandelierlight")
     inst._light.entity:AddFollower()
     inst._light.entity:SetParent(inst.entity)
     inst._light.Follower:FollowSymbol(inst.GUID, "body", -10, 88, 0)
+    SendModRPCToClient(GetClientModRPC("Succulent_RPC", "Chandelier_Transparent"), nil, inst._light)
 
     inst._sparklet = SpawnPrefab("chandeliersparkle")
     inst._sparklet.entity:AddFollower()
     inst._sparklet.entity:SetParent(inst.entity)
     inst._sparklet.Follower:FollowSymbol(inst.GUID, "body", 0, 50, 0)
     inst._sparklet:SetVariation(tostring(math.clamp(math.ceil(math.random() * 5), 1, 5)))
+    SendModRPCToClient(GetClientModRPC("Succulent_RPC", "Chandelier_Transparent"), nil, inst._sparklet)
+
+    CheckDay(inst)
 
     inst:AddComponent("inspectable")
     inst:AddComponent("lootdropper")

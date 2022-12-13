@@ -86,6 +86,15 @@ local function onbuilt(inst)
     inst.SoundEmitter:PlaySound("dontstarve/common/place_structure_stone")
 end
 
+local function onanimover(inst)
+    if inst.AnimState:IsCurrentAnimation("idle") then
+        if inst._snow ~= nil then return end
+        inst._snow = SpawnPrefab("rack_snow")
+        inst._snow.entity:SetParent(inst.entity)
+        inst._snow.Follower:FollowSymbol(inst.GUID, "rack", 0, 0, 0)
+    end
+end
+
 local function fn()
     local inst = CreateEntity()
 
@@ -139,6 +148,8 @@ local function fn()
     inst.components.workable:SetWorkLeft(4)
     inst.components.workable:SetOnFinishCallback(onhammered)
     -- inst.components.workable:SetOnWorkCallback(onhit)
+
+    inst:ListenForEvent("animover", onanimover)
 
     return inst
 end
