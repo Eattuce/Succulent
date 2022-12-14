@@ -1,3 +1,4 @@
+-- 后期加雪
 
 local function MakeSnow(name)
     local assets =
@@ -42,4 +43,5 @@ end
 
 return MakeSnow("totem_snow"),
     MakeSnow("rack_snow"),
-    MakeSnow("succulentchest_snow")
+    MakeSnow("succulentchest_snow"),
+    MakeSnow("fountain_snow")

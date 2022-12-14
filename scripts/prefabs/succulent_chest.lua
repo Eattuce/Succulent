@@ -17,7 +17,7 @@ local function onopen(inst)
 end
 
 local function onclose(inst)
-    if inst._snow then inst._snow:Show() end
+    if inst._snow then inst._snow:DoTaskInTime(0.2, function() inst._snow:Show() end) end
     inst.AnimState:PlayAnimation("close")
     inst.AnimState:PushAnimation("closed", false)
     inst.SoundEmitter:PlaySound("succulent_chest/chest/close")
@@ -46,6 +46,7 @@ local function onhit(inst, worker)
 end
 
 local function onbuilt(inst)
+    if inst._snow ~= nil then inst._snow:Hide() end
     inst.AnimState:PlayAnimation("place")
     inst.AnimState:PushAnimation("closed", false)
     -- inst.SoundEmitter:PlaySound("dontstarve/common/chest_craft")
@@ -53,12 +54,12 @@ local function onbuilt(inst)
 end
 
 local function onanimover(inst)
-    if inst._snow == nil then
-        if inst.AnimState:IsCurrentAnimation("closed") then
-            inst._snow = SpawnPrefab("succulentchest_snow")
-            inst._snow.entity:SetParent(inst.entity)
-            inst._snow.Follower:FollowSymbol(inst.GUID, "chest01", 0, 0, 0)
-        end
+    if inst.AnimState:IsCurrentAnimation("closed") then
+        if inst._snow ~= nil then inst._snow:Show() return end
+
+        inst._snow = SpawnPrefab("succulentchest_snow")
+        inst._snow.entity:SetParent(inst.entity)
+        inst._snow.Follower:FollowSymbol(inst.GUID, "chest01", -40, -80, 0)
     end
 end
 
@@ -110,7 +111,7 @@ local function fn()
     inst.components.hauntable:SetHauntValue(TUNING.HAUNT_TINY)
 
     inst:ListenForEvent("onbuilt", onbuilt)
-    inst.ListenForEvent("animover", onanimover)
+    inst:ListenForEvent("animover", onanimover)
 
     return inst
 end

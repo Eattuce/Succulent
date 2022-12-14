@@ -87,8 +87,8 @@ local function onbuilt(inst)
 end
 
 local function onanimover(inst)
+    if inst._snow ~= nil then return end
     if inst.AnimState:IsCurrentAnimation("idle") then
-        if inst._snow ~= nil then return end
         inst._snow = SpawnPrefab("rack_snow")
         inst._snow.entity:SetParent(inst.entity)
         inst._snow.Follower:FollowSymbol(inst.GUID, "rack", 0, 0, 0)

@@ -1,14 +1,18 @@
 
 local L = locale ~= "zh" and locale ~= "zhr" --true-英文; false-中文
-local date = "2022/12/1"
+local y = "2022"
+local m = "12"
+local d = "25"
 
 name = L and "Succulent plant" or "多肉植物!"
 author = "码：生菜  画：灰色代表作"
 version = "4.7.4"
 description =
     L
-    and version.."   "..date.."\n  - Replaced the animations of Rock Chest with low quality animations for now\n"
-    or version.."   "..date.."\n  - 暂时用比较生草的动画替代了沙石箱子的动画以避免和樱花林产生的动画错误，有时间会修复\n"
+    and version.."   "..m.."/"..d.."/"..y..
+    "\n  - 'Relic' can be upgraded 8 times by adding materials after it is placed and changing its appearance \n  - Fixed multiple animations \n  - Added snow covered effect for some of mod structures\n"
+    or version.."   "..y.."/"..m.."/"..d..
+    "\n  - 遗迹赝品在放置后可以通过添加材料进行升级改变外观 可升级8次 \n  - 修复多个动画 \n  - 为部分模组建筑增加覆雪效果\n"
 
 forumthread = nil
 
@@ -16,7 +20,7 @@ forumthread = nil
 api_version = 10
 
 --mod加载的优先级，不写就默认为0，越大越优先加载
--- ShowMe(Origin) Workshop ID - 666155465 (0.00666155465) Needs to be larger than it
+-- ShowMe(Origin) Workshop ID - 666155465 (0.00666155465) | Needs to be larger than that
 priority = 0.02441790846
 
 -- Compatible with Don't Starve Together
@@ -102,9 +106,9 @@ configuration_options =
         default = true,
     },
 
-    Title(""),
-    Title(L and "Succulent planter or" or "建造多肉农场/大型多肉盆栽"),
-    Title(L and "Potted Succulent(Large)" or ""),
+    -- Title(""),
+    Title(L and "Succulent Planter or" or ""),
+    Title(L and "Potted Succulent(Large)" or "建造多肉农场/大型多肉盆栽"),
     L and {
         name = "farm_deco",
         label = "Succulent planter/Potted Succulent(Large)",
@@ -128,8 +132,8 @@ configuration_options =
         },
         default = "farm",
     },
-    Title(""),
-    Title(L and "Emerald staff settings" or "翠榴法杖设置"),
+    -- Title(""),
+    Title(L and "Emerald Staff Settings" or "翠榴法杖设置"),
     L and {
         name = "staff",
         label = "Product",
@@ -151,6 +155,30 @@ configuration_options =
         },
         default = true,
     },
+
+    Title(L and "Relic Upgrade Materials" or "遗迹赝品升级材料数量"),
+    L and {
+        name = "upgrade_easy",
+        label = "Amount",
+        hover = "Stuff required to upgrade relic",
+        options =
+        {
+            {description = "Quite a lot(Default)", data = false},
+            {description = "Not much", data = true},
+        },
+        default = false,
+    } or {
+        name = "upgrade_easy",
+        label = "数量",
+        hover = "升级遗迹需要的材料量",
+        options =
+        {
+            {description = "很多(默认)", data = false},
+            {description = "不多", data = true},
+        },
+        default = false,
+    },
+
 }
 
 

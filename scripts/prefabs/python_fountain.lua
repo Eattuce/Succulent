@@ -88,6 +88,10 @@ local function structure_fn()
         return inst
     end
 
+    inst._snow = SpawnPrefab("fountain_snow")
+    inst._snow.entity:SetParent(inst.entity)
+    inst._snow.Transform:SetPosition(0, 0, 0)
+
     inst:AddComponent("inspectable")
     inst:AddComponent("lootdropper")
 

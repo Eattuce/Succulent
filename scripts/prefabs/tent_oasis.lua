@@ -143,6 +143,8 @@ local function fn()
     inst.AnimState:PlayAnimation("place")
     inst.AnimState:PushAnimation("idle")
 
+    MakeSnowCoveredPristine(inst)
+
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then
@@ -175,6 +177,8 @@ local function fn()
         end
     end
 --------------------------------------------------------------------------
+
+    MakeSnowCovered(inst)
 
     inst:AddComponent("inspectable")
 

@@ -188,16 +188,44 @@ AddCharacterRecipe("treasurechest_succulent",   {Ingredient("cutstone", 10), Ing
 
 
 -- Construction Plans
-CONSTRUCTION_PLANS["totem"] = { Ingredient("succulent_picked", 3), Ingredient("cutgrass", 1), Ingredient("twigs", 1) }
-CONSTRUCTION_PLANS["totem_construction1"] = { Ingredient("twigs", 1)--[[ , Ingredient("cutgrass", 1), Ingredient("fig", 1), Ingredient("flint", 1), Ingredient("guano", 1) ]] }
-CONSTRUCTION_PLANS["totem_construction2"] = { Ingredient("twigs", 1)--[[ , Ingredient("cutgrass", 1), Ingredient("fig", 1), Ingredient("flint", 1), Ingredient("guano", 1) ]] }
-CONSTRUCTION_PLANS["totem_construction3"] = { Ingredient("twigs", 1)--[[ , Ingredient("cutgrass", 1), Ingredient("fig", 1), Ingredient("flint", 1), Ingredient("guano", 1) ]] }
-CONSTRUCTION_PLANS["totem_construction4"] = { Ingredient("twigs", 1)--[[ , Ingredient("cutgrass", 1), Ingredient("fig", 1), Ingredient("flint", 1), Ingredient("guano", 1) ]] }
-CONSTRUCTION_PLANS["totem_construction5"] = { Ingredient("twigs", 1)--[[ , Ingredient("cutgrass", 1), Ingredient("fig", 1), Ingredient("flint", 1), Ingredient("guano", 1) ]] }
-CONSTRUCTION_PLANS["totem_construction6"] = { Ingredient("twigs", 1)--[[ , Ingredient("cutgrass", 1), Ingredient("fig", 1), Ingredient("flint", 1), Ingredient("guano", 1) ]] }
-CONSTRUCTION_PLANS["totem_construction7"] = { Ingredient("twigs", 1)--[[ , Ingredient("cutgrass", 1), Ingredient("fig", 1), Ingredient("flint", 1), Ingredient("guano", 1) ]] }
+if GetModConfigData("upgrade_easy") then
+    CONSTRUCTION_PLANS["totem"] =               { Ingredient("succulent_picked", 3), Ingredient("twigs", 3) }
+    CONSTRUCTION_PLANS["totem_construction1"] = { Ingredient("succulent_picked", 3), Ingredient("twigs", 3) }
+    CONSTRUCTION_PLANS["totem_construction2"] = { Ingredient("succulent_picked", 3), Ingredient("twigs", 3), Ingredient("townportaltalisman", 2), Ingredient("rocks", 5), Ingredient("petals", 3) }
+    CONSTRUCTION_PLANS["totem_construction3"] = { Ingredient("succulent_picked", 3), Ingredient("twigs", 3), Ingredient("townportaltalisman", 2), Ingredient("rocks", 5), Ingredient("cutlichen", 3) }
+    CONSTRUCTION_PLANS["totem_construction4"] = { Ingredient("succulent_picked", 3), Ingredient("cutlichen", 3), Ingredient("townportaltalisman", 2), Ingredient("rocks", 10) }
+    CONSTRUCTION_PLANS["totem_construction5"] = { Ingredient("succulent_picked", 5), Ingredient("cutlichen", 3), Ingredient("rocks", 5) }
+    CONSTRUCTION_PLANS["totem_construction6"] = { Ingredient("succulent_picked", 3), Ingredient("cutlichen", 3), Ingredient("rocks", 10), Ingredient("rope", 4), Ingredient("petals", 3) }
+    CONSTRUCTION_PLANS["totem_construction7"] = { Ingredient("cactus_flower", 8) }
+
+    AddDeconstructRecipe("totem_construction1", { Ingredient("cutstone", 3), Ingredient("townportaltalisman", 4), Ingredient("succulent_picked", 3), Ingredient("twigs", 3) })
+    AddDeconstructRecipe("totem_construction2", { Ingredient("cutstone", 3), Ingredient("townportaltalisman", 4), Ingredient("succulent_picked", 6), Ingredient("twigs", 6) })
+    AddDeconstructRecipe("totem_construction3", { Ingredient("cutstone", 3), Ingredient("townportaltalisman", 6), Ingredient("succulent_picked", 9), Ingredient("twigs", 9), Ingredient("rocks", 5), Ingredient("petals", 3) })
+    AddDeconstructRecipe("totem_construction4", { Ingredient("cutstone", 3), Ingredient("townportaltalisman", 8), Ingredient("succulent_picked", 12), Ingredient("twigs", 12), Ingredient("rocks", 10), Ingredient("petals", 3), Ingredient("cutlichen", 3) })
+    AddDeconstructRecipe("totem_construction5", { Ingredient("cutstone", 3), Ingredient("townportaltalisman", 10), Ingredient("succulent_picked", 15), Ingredient("twigs", 12), Ingredient("rocks", 20), Ingredient("petals", 3), Ingredient("cutlichen", 6) })
+    AddDeconstructRecipe("totem_construction6", { Ingredient("cutstone", 3), Ingredient("townportaltalisman", 10), Ingredient("succulent_picked", 20), Ingredient("twigs", 12), Ingredient("rocks", 25), Ingredient("petals", 3), Ingredient("cutlichen", 9) })
+    AddDeconstructRecipe("totem_construction7", { Ingredient("cutstone", 3), Ingredient("townportaltalisman", 10), Ingredient("succulent_picked", 23), Ingredient("twigs", 12), Ingredient("rocks", 35), Ingredient("petals", 6), Ingredient("cutlichen", 12), Ingredient("rope", 4) })
+    AddDeconstructRecipe("totem_construction8", { Ingredient("cutstone", 3), Ingredient("townportaltalisman", 10), Ingredient("succulent_picked", 23), Ingredient("twigs", 12), Ingredient("rocks", 35), Ingredient("petals", 6), Ingredient("cutlichen", 12), Ingredient("rope", 4), Ingredient("cactus_flower", 8) })
+else
+    CONSTRUCTION_PLANS["totem"] =               { Ingredient("succulent_picked", 10), Ingredient("townportaltalisman", 10), Ingredient("cutstone", 10), Ingredient("marble", 10), Ingredient("seeds", 20) }
+    CONSTRUCTION_PLANS["totem_construction1"] = { Ingredient("succulent_picked", 10), Ingredient("townportaltalisman", 10), Ingredient("cutstone", 10), Ingredient("marble", 10), Ingredient("seeds", 20) }
+    CONSTRUCTION_PLANS["totem_construction2"] = { Ingredient("succulent_picked", 10), Ingredient("townportaltalisman", 10), Ingredient("cutstone", 10), Ingredient("seeds", 20), Ingredient("cutreeds", 40)}
+    CONSTRUCTION_PLANS["totem_construction3"] = { Ingredient("succulent_picked", 10), Ingredient("townportaltalisman", 10), Ingredient("cutstone", 10), Ingredient("marble", 10),Ingredient("cutreeds", 30) }
+    CONSTRUCTION_PLANS["totem_construction4"] = { Ingredient("succulent_picked", 10), Ingredient("townportaltalisman", 10), Ingredient("cutstone", 10), Ingredient("marble", 10),Ingredient("cutreeds", 30) }
+    CONSTRUCTION_PLANS["totem_construction5"] = { Ingredient("succulent_picked", 10), Ingredient("townportaltalisman", 10), Ingredient("cutstone", 10), Ingredient("marble", 10),Ingredient("rope", 20) }
+    CONSTRUCTION_PLANS["totem_construction6"] = { Ingredient("succulent_picked", 10), Ingredient("townportaltalisman", 10), Ingredient("cutstone", 10), Ingredient("marble", 10),Ingredient("rope", 20) }
+    CONSTRUCTION_PLANS["totem_construction7"] = { Ingredient("succulent_picked", 10), Ingredient("townportaltalisman", 10), Ingredient("cutstone", 10), Ingredient("cactus_flower", 20),Ingredient("cutreeds", 30) }
 
 
+    AddDeconstructRecipe("totem_construction1", { Ingredient("succulent_picked", 10), Ingredient("townportaltalisman", 14), Ingredient("cutstone", 13), Ingredient("marble", 10), Ingredient("seeds", 20) })
+    AddDeconstructRecipe("totem_construction2", { Ingredient("succulent_picked", 20), Ingredient("townportaltalisman", 24), Ingredient("cutstone", 23), Ingredient("marble", 20), Ingredient("seeds", 40) })
+    AddDeconstructRecipe("totem_construction3", { Ingredient("succulent_picked", 30), Ingredient("townportaltalisman", 34), Ingredient("cutstone", 33), Ingredient("marble", 20), Ingredient("seeds", 60), Ingredient("cutreeds", 40) })
+    AddDeconstructRecipe("totem_construction4", { Ingredient("succulent_picked", 40), Ingredient("townportaltalisman", 44), Ingredient("cutstone", 43), Ingredient("marble", 30), Ingredient("seeds", 60), Ingredient("cutreeds", 70) })
+    AddDeconstructRecipe("totem_construction5", { Ingredient("succulent_picked", 50), Ingredient("townportaltalisman", 54), Ingredient("cutstone", 53), Ingredient("marble", 40), Ingredient("seeds", 60), Ingredient("cutreeds", 100) })
+    AddDeconstructRecipe("totem_construction6", { Ingredient("succulent_picked", 60), Ingredient("townportaltalisman", 64), Ingredient("cutstone", 63), Ingredient("marble", 50), Ingredient("seeds", 60), Ingredient("cutreeds", 100), Ingredient("rope", 20) })
+    AddDeconstructRecipe("totem_construction7", { Ingredient("succulent_picked", 70), Ingredient("townportaltalisman", 74), Ingredient("cutstone", 73), Ingredient("marble", 60), Ingredient("seeds", 60), Ingredient("cutreeds", 100), Ingredient("rope", 40) })
+    AddDeconstructRecipe("totem_construction8", { Ingredient("succulent_picked", 80), Ingredient("townportaltalisman", 84), Ingredient("cutstone", 83), Ingredient("marble", 60), Ingredient("seeds", 60), Ingredient("cutreeds", 130), Ingredient("rope", 40), Ingredient("cactus_flower", 10) })
+end
 
 
 

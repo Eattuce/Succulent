@@ -13,7 +13,6 @@ local assets =
     Asset("ANIM", "anim/totem_lv6.zip"),
     Asset("ANIM", "anim/totem_lv7.zip"),
     Asset("ANIM", "anim/totem_lv8.zip"),
-
 }
 
 local prefabs =
@@ -134,8 +133,7 @@ local function MakeTotem(name, client_postinit, master_postinit, construction_da
 			inst.components.constructionsite:SetOnConstructedFn(OnConstructed)
 		end
 
-
-        AddFollowSymbol(inst, SpawnPrefab("totem_snow"), "high", 0, 0, 0).AnimState:SetFinalOffset(1)
+        AddFollowSymbol(inst, SpawnPrefab("totem_snow"), "high", 0, 0, 0)
 
         if inst.level >= 3 then
             inst.rock1 = AddFollowSymbol(inst, SpawnPrefab("totem_floatingrock"), "shadow", 400, -420, 0)
@@ -144,22 +142,17 @@ local function MakeTotem(name, client_postinit, master_postinit, construction_da
         end
         if inst.level >= 4 then
             inst.rock2 = AddFollowSymbol(inst, SpawnPrefab("totem_floatingrock"), "shadow", -520, -830, 0)
-            inst.rock2.AnimState:OverrideSymbol("rock", "floating_rock_build", "rock4")
             inst.rock2.AnimState:SetFinalOffset(-1)
+            inst.rock2.AnimState:OverrideSymbol("rock", "floating_rock_build", "rock4")
 
             AddFollowSymbol(inst, SpawnPrefab("totem_uppervine"), "high", 50, -100, 0).AnimState:SetFinalOffset(-1)
         end
         if inst.level >= 5 then
-            inst.rock3 = SpawnPrefab("totem_floatingrock")
-            inst.rock3.AnimState:OverrideSymbol("rock", "floating_rock_build", "rock2")
-            inst.rock3.entity:SetParent(inst.entity)
-            inst.rock3.Follower:FollowSymbol(inst.GUID, "shadow", 360, -900, 0)
-
             inst.rock2.AnimState:OverrideSymbol("rock", "floating_rock_build", "rock5")
+            inst.rock3 = AddFollowSymbol(inst, SpawnPrefab("totem_floatingrock"), "shadow", 360, -900, 0)
+            inst.rock3.AnimState:OverrideSymbol("rock", "floating_rock_build", "rock2")
 
-            inst.lowervine = SpawnPrefab("totem_lowervine")
-            inst.lowervine.entity:SetParent(inst.entity)
-            inst.lowervine.Follower:FollowSymbol(inst.GUID, "high", -52, 220, 0)
+            inst.lowervine = AddFollowSymbol(inst, SpawnPrefab("totem_lowervine"), "high", -52, 220, 0)
             inst.lowervine.AnimState:SetFinalOffset(-1)
         end
         if inst.level >= 7 then
