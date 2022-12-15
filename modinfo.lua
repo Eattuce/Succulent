@@ -6,7 +6,7 @@ local d = "25"
 
 name = L and "Succulent plant" or "多肉植物!"
 author = "码：生菜  画：灰色代表作"
-version = "4.7.4"
+version = "4.8.0"
 description =
     L
     and version.."   "..m.."/"..d.."/"..y..
