@@ -35,6 +35,44 @@ local Construction_data = {
 	{level = 7, name = "totem_construction7", construction_product = "totem_construction8" },  -- (Level 8) 1B 2C 3B
 }
 
+local Items = {
+{
+    {{"succulent_picked", 10}, {"townportaltalisman", 10}, {"cutstone", 10}, {"marble", 10}},
+    {{"seeds", 20}}
+},
+{
+    {{"succulent_picked", 20}, {"townportaltalisman", 20}, {"cutstone", 20}, {"marble", 20}},
+    {{"seeds", 40}}
+},
+{
+    {{"succulent_picked", 30}, {"townportaltalisman", 30}, {"cutstone", 30}, {"marble", 20}},
+    {{"seeds", 40}, {"seeds", 20}, {"cutreeds", 40}}
+},
+{
+    {{"succulent_picked", 40}, {"townportaltalisman", 40}, {"cutstone", 40}, {"marble", 20}},
+    {{"seeds", 40}, {"seeds", 20}, {"cutreeds", 40}}
+},
+}
+
+local function DropBundle(inst, items)
+    for i, v in ipairs(items) do
+        if type(v) == "string" then
+            items[i] = SpawnPrefab(v)
+        else
+            items[i] = SpawnPrefab(v[1])
+            items[i].components.stackable.stacksize = v[2]
+        end
+    end
+
+    local bundle = SpawnPrefab("gift")
+    bundle.components.unwrappable:WrapItems(items)
+    for i, v in ipairs(items) do
+        v:Remove()
+    end
+
+    inst.components.lootdropper:FlingItem(bundle)
+end
+
 local function OnConstructed(inst, doer)
     local concluded = true
     for i, v in ipairs(CONSTRUCTION_PLANS[inst.prefab] or {}) do
@@ -68,8 +106,12 @@ local function onconstruction_built(inst)
 end
 
 local function OnWorkFinished(inst, worker)
-    inst.components.lootdropper:DropLoot()
-    -- inst.components.lootdropper:SetLoot({"cutstone", "cutstone"})
+    -- inst.components.lootdropper:DropLoot()
+    local tab = inst.level >= 1 and Items[inst.level] or {}
+    for i,v in ipairs(tab) do
+        DropBundle(inst, v)
+    end
+
     local fx = SpawnPrefab("collapse_small")
     fx.Transform:SetPosition(inst.Transform:GetWorldPosition())
     fx:SetMaterial("stone")

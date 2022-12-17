@@ -1,68 +1,4 @@
-
 GLOBAL.setmetatable(env, { __index = function(t, k) return GLOBAL.rawget(GLOBAL, k) end })
-------------------------------------------------------------------------
------------------------ 增加特殊的放大格子 ------------------------------
-------------------------------------------------------------------------
-local scale = 2.2
-local InvSlot = require "widgets/invslot"
-AddClassPostConstruct("widgets/containerwidget", function (self)
-    local _open = self.Open
-
-    function self:Open(container, doer)
-
-        _open(self, container, doer)
-
-        local widget = container.replica.container:GetWidget()
-        if widget.spslotpos ~= nil then
-            for i, v in ipairs(widget.spslotpos or {}) do
-                local bgoverride = widget.slotbg ~= nil and widget.slotbg[i] or nil
-                local slot = InvSlot(i,
-                    bgoverride ~= nil and bgoverride.atlas or "images/hud.xml",
-                    bgoverride ~= nil and bgoverride.image or "inv_slot.tex",
-                    self.owner,
-                    container.replica.container)
-
-                self.inv[i] = self:AddChild(slot)
-                slot:SetPosition(v)
-                slot:SetScale(scale,scale,scale)
-                slot.highlight_scale = 1.3 * 1.9
-                slot.base_scale = 1 * scale
-
-                if not container.replica.container:IsSideWidget() then
-                    if widget.top_align_tip ~= nil then
-                        slot.top_align_tip = widget.top_align_tip
-                    else
-                        slot.side_align_tip = (widget.side_align_tip or 0) - v.x
-                    end
-                end
-            end
-
-            for i, v in ipairs(widget.spslotpos2 or {}) do
-                local bgoverride = widget.slotbg ~= nil and widget.slotbg[#widget.spslotpos + i] or nil
-                local slot = InvSlot(#widget.spslotpos + i,
-                    bgoverride ~= nil and bgoverride.atlas or "images/hud.xml",
-                    bgoverride ~= nil and bgoverride.image or "inv_slot.tex",
-                    self.owner,
-                    container.replica.container
-                )
-                self.inv[#widget.spslotpos + i] = self:AddChild(slot)
-
-                slot:SetPosition(v)
-
-                if not container.replica.container:IsSideWidget() then
-                    if widget.top_align_tip ~= nil then
-                        slot.top_align_tip = widget.top_align_tip
-                    else
-                        slot.side_align_tip = (widget.side_align_tip or 0) - v.x
-                    end
-                end
-            end
-        end
-
-        self:Refresh()
-    end
-end)
-------------------------------------------------------------------------
 local containers = require "containers"
 local params = containers.params
 local _widgetsetup = containers.widgetsetup
@@ -79,9 +15,10 @@ function containers.widgetsetup(container, prefab, data, ...)
         end
     end
 end
-------------------------------------------------------------------------
 
--- 大箱子
+--------------------------------------------------------------------------
+--[[ 大箱子 rock chest]]
+--------------------------------------------------------------------------
 params.treasurechest_succulent =
 {
     widget =
@@ -108,41 +45,10 @@ for y = 1, -1, -1 do
     end
 end
 
--- params.treasurechest.priorityfn = function (container, item, slot)
---     return item.prefab == "forgetmelots" or item.prefab == "tillweed" or item.prefab == "firenettles"
--- end
 
--- function params.treasurechest.itemtestfn(container, item, slot)
---     if (params.treasurechest.widget.slotpos ~= nil and #params.treasurechest.widget.slotpos or 0) + (params.treasurechest.widget.spslotpos ~= nil and #params.treasurechest.widget.spslotpos or 0) == slot then
---         return params.treasurechest.priorityfn
---     end
---     return false
--- end
-
--- params.chandelier_rock =
--- {
---     widget =
---     {
---         slotpos =
---         {
---             Vector3(0, 64 + 32 + 8 + 4, 0),
---             Vector3(0, 32 + 4, 0),
---             Vector3(0, -(32 + 4), 0),
---         },
---         animbank = "ui_lamp_1x4",
---         animbuild = "ui_lamp_1x4",
---         pos = Vector3(0, 200, 0),
---         side_align_tip = 100,
---     },
---     acceptsstacks = false,
---     type = "cooker",
--- }
--- function params.chandelier_rock.itemtestfn(container, item, slot)
---     return item.prefab == "moonbutterfly" or item.prefab == "lightcrab" or item.prefab == "lightflier" or item:HasTag("chandelier_lighter")
--- end
-
-------------------------------------------------------------------------
--- 可升级界面
+--------------------------------------------------------------------------
+--[[ 遗迹 Relic]]
+--------------------------------------------------------------------------
 params.totem_construction_container = deepcopy(params.construction_container)
 params.totem_construction_container.widget.slotpos = {}
 params.totem_construction_container.widget.animbank = "ui_construction_5x1"
@@ -150,18 +56,41 @@ params.totem_construction_container.widget.animbuild = "ui_construction_5x1" -- 
 for x = -2, 2, 1 do
     table.insert(params.totem_construction_container.widget.slotpos, Vector3(x * 110, 8, 0))
 end
+--[[ 
+params.totem_construction_container.widget.switchbutton = {
+    hovertext = STRINGS.ACTIONS.APPLYCONSTRUCTION,
+    position = Vector3(280, -110, 0),
+}
+
+function params.totem_construction_container.widget.switchbutton.fn(inst, doer)
+    -- if inst.components.container ~= nil then
+    --     BufferedAction(doer, inst, ACTIONS.APPLYCONSTRUCTION):Do()
+    -- elseif inst.replica.container ~= nil and not inst.replica.container:IsBusy() then
+    --     SendRPCToServer(RPC.DoWidgetButtonAction, ACTIONS.APPLYCONSTRUCTION.code, inst, ACTIONS.APPLYCONSTRUCTION.mod_name)
+    -- end
+    if inst.components.container ~= nil then
+        -- SendModRPCToServer(GetModRPC("Succulent_RPC", "eazy_upgrade"))
+        local target = doer.components.constructionbuilderuidata:GetTarget()
+        if target ~= nil then
+            CONSTRUCTION_PLANS[target.prefab] = { Ingredient("twigs", 1) }
+        end
+        BufferedAction(doer, inst, ACTIONS.STOPCONSTRUCTION):Do()
+    elseif inst.replica.container ~= nil and not inst.replica.container:IsBusy() then
+        SendModRPCToServer(GetModRPC("Succulent_RPC", "eazy_upgrade"), ACTIONS.STOPCONSTRUCTION.code, inst)
+    end
+end
+
+-- function params.totem_construction_container.widget.switchbutton.validfn(inst)
+--     return inst.replica.container ~= nil and not inst.replica.container:IsEmpty()
+-- end
+
+ ]]
 
 
 
 
 
 
-
-
-
-
-------------------------------------------------------------------------
-------------------------------------------------------------------------
 for k, v in pairs(params) do
     local total_slots = (v.widget.slotpos ~= nil and #v.widget.slotpos or 0) + (v.widget.spslotpos ~= nil and #v.widget.spslotpos or 0) + (v.widget.spslotpos2 ~= nil and #v.widget.spslotpos2 or 0)
     containers.MAXITEMSLOTS = math.max(containers.MAXITEMSLOTS, total_slots)

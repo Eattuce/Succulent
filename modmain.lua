@@ -201,6 +201,7 @@ local mainfiles =
     "skins",
     "addsg",
     -- "addactions",
+    "modcontainerwidget",
     "addcontainers",
     "addrecipes",
     -- "brains",
@@ -330,22 +331,34 @@ end
 local function Chandelier_FadeIn(inst)
     if inst.components and inst.components.gradualfader then
         inst.components.gradualfader:FadeIn()
-        -- TheNet:Announce("In")
     end
 end
 local function Chandelier_FadeOut(inst)
     if inst.components and inst.components.gradualfader then
         inst.components.gradualfader:FadeOut()
-        -- TheNet:Announce("Out")
     end
 end
 local function SetTransParent(inst)
     inst.AnimState:OverrideMultColour(0, 0, 0, 0)
 end
-
+local function up(player, action, target)
+    local playercontroller = player.components.playercontroller
+    if playercontroller ~= nil and playercontroller:IsEnabled() and not player.sg:HasStateTag("busy") then
+        local container = target ~= nil and target.components.container or nil
+        if container ~= nil and container:IsOpenedBy(player) then
+            local widget = container:GetWidget()
+            local switchbutton = widget ~= nil and widget.switchbutton or nil
+            if switchbutton ~= nil and (switchbutton.validfn == nil or switchbutton.validfn(target)) and switchbutton.fn ~= nil then
+                switchbutton.fn(target, player)
+            end
+        end
+    end
+end
 AddClientModRPCHandler("Succulent_RPC", "Chandelier_FadeIn", Chandelier_FadeIn)
 AddClientModRPCHandler("Succulent_RPC", "Chandelier_FadeOut", Chandelier_FadeOut)
 AddClientModRPCHandler("Succulent_RPC", "Chandelier_Transparent", SetTransParent)
+
+AddModRPCHandler("Succulent_RPC", "eazy_upgrade", up)
 
 
 -- ShowMe(Origin) Workshop ID - 666155465
