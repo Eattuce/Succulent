@@ -102,7 +102,11 @@ local function ExtraBuildDist(doer, dest, bufferedaction) -- doer, mouse?, buffe
 end
 ACTIONS.BUILD.extra_arrive_dist = ExtraBuildDist
 
-
+local function CanMakePond(pt, rot)
+    local ground_tile = TheWorld.Map:GetTileAtPoint(pt.x, pt.y, pt.z)
+    local GROUND_HARD = GROUND_HARD or {}
+    return ground_tile and GROUND_HARD[ground_tile] and not (ground_tile == WORLD_TILES.MONKEY_DOCK)
+end
 
 ------------------------------------------------------------------------
 ------------------------------------------------------------------------
@@ -148,6 +152,9 @@ AddRecipe2("emeraldstaff",                  {Ingredient("nightmarefuel", 4), Ing
 AddRecipeToFilter("emeraldstaff",           "MAGIC")
 AddRecipeToFilter("emeraldstaff",           "GARDENING")
 
+AddRecipe2("chandelier_rock",              { Ingredient("rope", 2), Ingredient("townportaltalisman", 3), Ingredient("succulent_picked", 4), Ingredient("lightcrab", 3)}, TECH.SCIENCE_TWO,       {placer = "chandelier_rock_placer", min_spacing = 3, atlas = impath.."chandelier_rock.xml", image="chandelier_rock.tex", testfn = HasCeilling, build_mode = BUILDMODE_AIR})
+AddRecipeToFilter("chandelier_rock", "LIGHT")
+AddRecipeToFilter("chandelier_rock", "STRUCTURES")
 
 -- 沙漠遗迹科技，制作站
 -- OASIS
@@ -168,14 +175,6 @@ AddRecipeToFilter("treasurechest_succulent_item", "CRAFTING_STATION")
 
 
 
--- 空中悬挂物品
-AddRecipe2("chandelier_rock",              { Ingredient("rope", 2), Ingredient("townportaltalisman", 3), Ingredient("succulent_picked", 4), Ingredient("lightcrab", 3)}, TECH.SCIENCE_TWO,       {placer = "chandelier_rock_placer", min_spacing = 3, atlas = impath.."chandelier_rock.xml", image="chandelier_rock.tex", testfn = HasCeilling, build_mode = BUILDMODE_AIR})
-AddRecipeToFilter("chandelier_rock", "LIGHT")
-AddRecipeToFilter("chandelier_rock", "STRUCTURES")
-
-
--- 为了建造法杖分解
--- AddDeconstructRecipe("treasurechest_succulent", {Ingredient("cutstone", 10), Ingredient("townportaltalisman", 10) })
 
 -- 人物
 -- 惠特尼
@@ -227,6 +226,9 @@ else
     AddDeconstructRecipe("totem_construction8", { Ingredient("succulent_picked", 80), Ingredient("townportaltalisman", 84), Ingredient("cutstone", 83), Ingredient("marble", 60), Ingredient("seeds", 60), Ingredient("cutreeds", 130), Ingredient("rope", 40), Ingredient("cactus_flower", 10) })
 end
 
+AddRecipe2("pond_succulent", { Ingredient("townportaltalisman", 4), Ingredient("cutstone", 6), Ingredient("succulent_picked", 6)}, TECH.SCIENCE_TWO, {placer = "pond_succulent_placer", min_spacing = 4, atlas = impath.."pond_succulent.xml", image="pond_succulent.tex", testfn = CanMakePond})
+AddRecipeToFilter("pond_succulent", "DECOR")
+AddRecipeToFilter("pond_succulent", "GARDENING")
 
 
 

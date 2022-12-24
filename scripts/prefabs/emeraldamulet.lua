@@ -28,7 +28,7 @@ end
 local function healowner(inst, owner)
     if (owner.components.health and owner.components.health:GetPercent() <= 0.6 ) then
         owner.components.health:DoDelta(TUNING.REDAMULET_CONVERSION, false, "emeraldamulet")
-        inst.components.finiteuses:Use(5)
+        inst.components.finiteuses:Use(2)
     end
 end
 
@@ -91,7 +91,7 @@ local function onequip_emerald(inst, owner)
     owner.AnimState:OverrideSymbol("swap_body", "torso_emeraldamulet", "torso_emeraldamulet")
 
     if inst.healtask == nil then
-        inst.healtask = inst:DoPeriodicTask(15, healowner, nil, owner)
+        inst.healtask = inst:DoPeriodicTask(5, healowner, nil, owner)
     end
 
     if inst.tendtoplantstask == nil then

@@ -42,6 +42,8 @@ PrefabFiles =
     "totem_deco",
 
     "extrasnowprefab",
+    "pond_succulent",
+    "pond_succulent_plant",
 }
 
 Assets =
@@ -141,6 +143,7 @@ for _,name in pairs(minimapatlas) do
     AddMinimapAtlas("minimap/"..name..".xml")
 end
 AddMinimapAtlas("images/map_icons/whitney.xml")
+AddMinimapAtlas("images/inventoryimages/pond_succulent.xml")
 
 --------------------------------------------------------------------------
 -- 根据语言设置选择STRINGS文件
@@ -358,7 +361,7 @@ AddClientModRPCHandler("Succulent_RPC", "Chandelier_FadeIn", Chandelier_FadeIn)
 AddClientModRPCHandler("Succulent_RPC", "Chandelier_FadeOut", Chandelier_FadeOut)
 AddClientModRPCHandler("Succulent_RPC", "Chandelier_Transparent", SetTransParent)
 
-AddModRPCHandler("Succulent_RPC", "eazy_upgrade", up)
+-- AddModRPCHandler("Succulent_RPC", "eazy_upgrade", up)
 
 
 -- ShowMe(Origin) Workshop ID - 666155465

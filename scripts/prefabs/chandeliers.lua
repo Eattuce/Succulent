@@ -245,7 +245,7 @@ local function fn()
         return inst
     end
 
-    inst.AnimState:SetDeltaTimeMultiplier(0.8)
+    inst.AnimState:SetDeltaTimeMultiplier(0.6 + math.random() * 0.2)
     inst.AnimState:SetTime(math.random() * inst.AnimState:GetCurrentAnimationLength())
 
     inst._light = SpawnPrefab("chandelierlight")
@@ -266,25 +266,13 @@ local function fn()
     inst:AddComponent("inspectable")
     inst:AddComponent("lootdropper")
 
-    -- inst:AddComponent("container")
-    -- inst.components.container:WidgetSetup("chandelier_rock")
-    -- inst.components.container.canbeopened = false
-
-    -- inst:AddComponent("preserver")
-    -- inst.components.preserver:SetPerishRateMultiplier(0.1)
-
     inst:AddComponent("workable")
     inst.components.workable:SetWorkAction(ACTIONS.HAMMER)
     inst.components.workable:SetWorkLeft(3)
     inst.components.workable:SetOnFinishCallback(ondestory)
 
-    -- inst:AddComponent("chandelier")
-
     inst:WatchWorldState("isday", OnIsDay)
     inst:ListenForEvent("onbuilt", onbuilt)
-
-    -- inst:ListenForEvent("itemget", itemget)
-    -- inst:ListenForEvent("itemlose", itemlose)
 
     if not TheWorld.state.isday then
         FadeIn(inst)

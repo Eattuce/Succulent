@@ -11,10 +11,10 @@ local function OnTimerDone(inst, data)
         inst.components.entitytracker:TrackEntity("totem_real", totem)
         inst:ListenForEvent("disappear", inst._ontotem_disappear, totem)
 
-        totem.AnimState:OverrideMultColour(0, 0, 0, 0)
         totem.Transform:SetPosition(inst.Transform:GetWorldPosition())
         totem:PushEvent("appear", totem)
         totem:PushEvent("gradualfade_in")
+        SendModRPCToClient(GetClientModRPC("Succulent_RPC", "Chandelier_FadeIn"), nil, totem)
     end
 end
 

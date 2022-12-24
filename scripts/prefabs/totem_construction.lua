@@ -35,6 +35,11 @@ local Construction_data = {
 	{level = 7, name = "totem_construction7", construction_product = "totem_construction8" },  -- (Level 8) 1B 2C 3B
 }
 
+local function displaynamefn(inst)
+    return STRINGS.NAMES.TOTEM_REAL
+end
+
+
 local Items = {
 {
     {{"succulent_picked", 10}, {"townportaltalisman", 10}, {"cutstone", 10}, {"marble", 10}},
@@ -146,16 +151,15 @@ local function MakeTotem(name, client_postinit, master_postinit, construction_da
         inst:AddTag("structure")
         inst:AddTag("totem")
 
-        if construction_data then
-            inst.level = construction_data.level
-        else
-            inst.level = 8
-        end
+        inst.level = construction_data and construction_data.level or 8
 
 		if construction_data then
             inst.AnimState:PlayAnimation("idle_3", true)
 			inst:AddTag("constructionsite")
 		end
+
+        inst.displaynamefn = displaynamefn
+        if inst.level >= 2 then inst:AddTag("antlion_sinkhole_blocker") end
 
         inst.entity:SetPristine()
 
