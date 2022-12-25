@@ -357,6 +357,13 @@ STRINGS.CHARACTERS.GENERIC.DESCRIBE.DUG_THISTLE_BUSH = "It requires soil to grow
 STRINGS.CHARACTERS.WHITNEY = require "speech_wendy"
 STRINGS.CHARACTERS.WHITNEY.ANNOUNCE_TALK_TO_PLANTS[1] = "All life must eventually be paid for by death."
 
+STRINGS.NAMES.POND_SUCCULENT = "Man-made Pond"
+STRINGS.RECIPE_DESC.POND_SUCCULENT = "Now we have our own pond"
+
+STRINGS.NAMES.POND_SUCCULENT_PLANT = "Plant"
+STRINGS.CHARACTERS.GENERIC.DESCRIBE.POND_SUCCULENT_PLANT = "It's a plant."
+
+STRINGS.TOTEM_HELP_STRING = "If you find it difficult, \nchange the materials required through Configure Mod."
 
 --[[
 STRINGS.NAMES.ABCDEFG

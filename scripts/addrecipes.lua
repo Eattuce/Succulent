@@ -104,8 +104,8 @@ ACTIONS.BUILD.extra_arrive_dist = ExtraBuildDist
 
 local function CanMakePond(pt, rot)
     local ground_tile = TheWorld.Map:GetTileAtPoint(pt.x, pt.y, pt.z)
-    local GROUND_HARD = GROUND_HARD or {}
-    return ground_tile and GROUND_HARD[ground_tile] and not (ground_tile == WORLD_TILES.MONKEY_DOCK)
+    local GROUND_FLOORING = GROUND_FLOORING or {}
+    return ground_tile and GROUND_FLOORING[ground_tile] and not (ground_tile == WORLD_TILES.MONKEY_DOCK)
 end
 
 ------------------------------------------------------------------------
@@ -187,7 +187,8 @@ AddCharacterRecipe("treasurechest_succulent",   {Ingredient("cutstone", 10), Ing
 
 
 -- Construction Plans
-if GetModConfigData("upgrade_easy") then
+TUNING.TOTEM_UPGRADE_EAZY = GetModConfigData("upgrade_easy")
+if TUNING.TOTEM_UPGRADE_EAZY then
     CONSTRUCTION_PLANS["totem"] =               { Ingredient("succulent_picked", 3), Ingredient("twigs", 3) }
     CONSTRUCTION_PLANS["totem_construction1"] = { Ingredient("succulent_picked", 3), Ingredient("twigs", 3) }
     CONSTRUCTION_PLANS["totem_construction2"] = { Ingredient("succulent_picked", 3), Ingredient("twigs", 3), Ingredient("townportaltalisman", 2), Ingredient("rocks", 5), Ingredient("petals", 3) }
@@ -216,14 +217,14 @@ else
     CONSTRUCTION_PLANS["totem_construction7"] = { Ingredient("succulent_picked", 10), Ingredient("townportaltalisman", 10), Ingredient("cutstone", 10), Ingredient("cactus_flower", 20),Ingredient("cutreeds", 30) }
 
 
-    AddDeconstructRecipe("totem_construction1", { Ingredient("succulent_picked", 10), Ingredient("townportaltalisman", 14), Ingredient("cutstone", 13), Ingredient("marble", 10), Ingredient("seeds", 20) })
-    AddDeconstructRecipe("totem_construction2", { Ingredient("succulent_picked", 20), Ingredient("townportaltalisman", 24), Ingredient("cutstone", 23), Ingredient("marble", 20), Ingredient("seeds", 40) })
-    AddDeconstructRecipe("totem_construction3", { Ingredient("succulent_picked", 30), Ingredient("townportaltalisman", 34), Ingredient("cutstone", 33), Ingredient("marble", 20), Ingredient("seeds", 60), Ingredient("cutreeds", 40) })
-    AddDeconstructRecipe("totem_construction4", { Ingredient("succulent_picked", 40), Ingredient("townportaltalisman", 44), Ingredient("cutstone", 43), Ingredient("marble", 30), Ingredient("seeds", 60), Ingredient("cutreeds", 70) })
-    AddDeconstructRecipe("totem_construction5", { Ingredient("succulent_picked", 50), Ingredient("townportaltalisman", 54), Ingredient("cutstone", 53), Ingredient("marble", 40), Ingredient("seeds", 60), Ingredient("cutreeds", 100) })
-    AddDeconstructRecipe("totem_construction6", { Ingredient("succulent_picked", 60), Ingredient("townportaltalisman", 64), Ingredient("cutstone", 63), Ingredient("marble", 50), Ingredient("seeds", 60), Ingredient("cutreeds", 100), Ingredient("rope", 20) })
-    AddDeconstructRecipe("totem_construction7", { Ingredient("succulent_picked", 70), Ingredient("townportaltalisman", 74), Ingredient("cutstone", 73), Ingredient("marble", 60), Ingredient("seeds", 60), Ingredient("cutreeds", 100), Ingredient("rope", 40) })
-    AddDeconstructRecipe("totem_construction8", { Ingredient("succulent_picked", 80), Ingredient("townportaltalisman", 84), Ingredient("cutstone", 83), Ingredient("marble", 60), Ingredient("seeds", 60), Ingredient("cutreeds", 130), Ingredient("rope", 40), Ingredient("cactus_flower", 10) })
+    -- AddDeconstructRecipe("totem_construction1", { Ingredient("succulent_picked", 10), Ingredient("townportaltalisman", 14), Ingredient("cutstone", 13), Ingredient("marble", 10), Ingredient("seeds", 20) })
+    -- AddDeconstructRecipe("totem_construction2", { Ingredient("succulent_picked", 20), Ingredient("townportaltalisman", 24), Ingredient("cutstone", 23), Ingredient("marble", 20), Ingredient("seeds", 40) })
+    -- AddDeconstructRecipe("totem_construction3", { Ingredient("succulent_picked", 30), Ingredient("townportaltalisman", 34), Ingredient("cutstone", 33), Ingredient("marble", 20), Ingredient("seeds", 60), Ingredient("cutreeds", 40) })
+    -- AddDeconstructRecipe("totem_construction4", { Ingredient("succulent_picked", 40), Ingredient("townportaltalisman", 44), Ingredient("cutstone", 43), Ingredient("marble", 30), Ingredient("seeds", 60), Ingredient("cutreeds", 70) })
+    -- AddDeconstructRecipe("totem_construction5", { Ingredient("succulent_picked", 50), Ingredient("townportaltalisman", 54), Ingredient("cutstone", 53), Ingredient("marble", 40), Ingredient("seeds", 60), Ingredient("cutreeds", 100) })
+    -- AddDeconstructRecipe("totem_construction6", { Ingredient("succulent_picked", 60), Ingredient("townportaltalisman", 64), Ingredient("cutstone", 63), Ingredient("marble", 50), Ingredient("seeds", 60), Ingredient("cutreeds", 100), Ingredient("rope", 20) })
+    -- AddDeconstructRecipe("totem_construction7", { Ingredient("succulent_picked", 70), Ingredient("townportaltalisman", 74), Ingredient("cutstone", 73), Ingredient("marble", 60), Ingredient("seeds", 60), Ingredient("cutreeds", 100), Ingredient("rope", 40) })
+    -- AddDeconstructRecipe("totem_construction8", { Ingredient("succulent_picked", 80), Ingredient("townportaltalisman", 84), Ingredient("cutstone", 83), Ingredient("marble", 60), Ingredient("seeds", 60), Ingredient("cutreeds", 130), Ingredient("rope", 40), Ingredient("cactus_flower", 10) })
 end
 
 AddRecipe2("pond_succulent", { Ingredient("townportaltalisman", 4), Ingredient("cutstone", 6), Ingredient("succulent_picked", 6)}, TECH.SCIENCE_TWO, {placer = "pond_succulent_placer", min_spacing = 4, atlas = impath.."pond_succulent.xml", image="pond_succulent.tex", testfn = CanMakePond})

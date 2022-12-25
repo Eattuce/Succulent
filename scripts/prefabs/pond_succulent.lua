@@ -30,15 +30,15 @@ local function SpawnPlants(inst)
 
     if inst.plants == nil then
         inst.plants = {}
-        for i = 1, math.random(1, 3) do
+        for i = 1, math.random(2, 4) do
             local theta = math.random() * 2 * PI
             table.insert(inst.plants,
             {
                 offset =
                 {
-                    math.sin(theta) * 1.9 + math.random() * .3,
+                    math.sin(theta) * 2.1 + math.random() * .3,
                     0,
-                    math.cos(theta) * 2.1 + math.random() * .3,
+                    math.cos(theta) * 2.3 + math.random() * .3,
                 },
             })
         end
@@ -53,7 +53,7 @@ local function SpawnPlants(inst)
                 plant.entity:SetParent(inst.entity)
                 plant.Transform:SetPosition(unpack(v.offset))
                 plant.persists = false
-                plant:SetVariation(math.random())
+                plant:SetVariation(math.random() > 0.5 and 2 or 1)
                 table.insert(inst.plant_ents, plant)
             end
         end
@@ -133,6 +133,15 @@ local function OnInit(inst)
     SpawnPlants(inst)
 end
 
+local fish = {}
+for i = 1, 9 do
+    table.insert(fish, "oceanfish_small_"..tostring(i).."_inv")
+end
+local function GetFish(inst)
+    local rnd = math.random()
+    return rnd < 0.2 and GetRandomItem(fish) or (rnd < 0.5 and "pondeel" or "pondfish")
+end
+
 local function commonfn()
     local inst = CreateEntity()
 
@@ -149,7 +158,7 @@ local function commonfn()
     phys:CollidesWith(COLLISION.ITEMS)
     phys:CollidesWith(COLLISION.CHARACTERS)
     phys:CollidesWith(COLLISION.GIANTS)
-    phys:SetCapsule(1.95, 2)
+    phys:SetCapsule(1.5, 1.6)
     inst:AddTag("blocker")
 
     inst.AnimState:SetBuild("pond_succulent_build")
@@ -186,11 +195,12 @@ local function commonfn()
 
     inst:AddComponent("workable")
     inst.components.workable:SetWorkAction(ACTIONS.DIG)
-    inst.components.workable:SetWorkLeft(4)
+    inst.components.workable:SetWorkLeft(5)
     inst.components.workable:SetOnFinishCallback(ondestory)
 
     inst:AddComponent("fishable")
     inst.components.fishable:SetRespawnTime(TUNING.FISH_RESPAWN_TIME)
+    inst.components.fishable:SetGetFishFn(GetFish)
 
     inst:AddComponent("hauntable")
     inst.components.hauntable:SetHauntValue(TUNING.HAUNT_TINY)

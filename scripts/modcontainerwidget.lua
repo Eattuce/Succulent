@@ -60,11 +60,11 @@ AddClassPostConstruct("widgets/containerwidget", function (self)
                 end
             end
         end
---[[ 
+
         if widget.switchbutton ~= nil then
-            if doer ~= nil and doer.components.playeractionpicker ~= nil then
-                doer.components.playeractionpicker:RegisterContainer(container)
-            end
+            -- if doer ~= nil and doer.components.playeractionpicker ~= nil then
+            --     doer.components.playeractionpicker:RegisterContainer(container)
+            -- end
 
             -- sb: Switch Button
             self.sb = self:AddChild(ImageButton("images/button_icons.xml", "refresh.tex", "refresh.tex", "refresh.tex", nil, nil, {1, 1}, {0,0}))
@@ -122,12 +122,10 @@ AddClassPostConstruct("widgets/containerwidget", function (self)
         --         end
         --     end, TheWorld)
        end
- ]] 
 
         self:Refresh()
     end
 
---[[ 
     -- Destory Button immediately on quit
     local _close = self.Close
     function self:Close()
@@ -140,5 +138,5 @@ AddClassPostConstruct("widgets/containerwidget", function (self)
         return _close(self)
     end
 
- ]]end)
+end)
 ------------------------------------------------------------------------

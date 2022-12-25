@@ -56,35 +56,35 @@ params.totem_construction_container.widget.animbuild = "ui_construction_5x1" -- 
 for x = -2, 2, 1 do
     table.insert(params.totem_construction_container.widget.slotpos, Vector3(x * 110, 8, 0))
 end
---[[ 
+
 params.totem_construction_container.widget.switchbutton = {
-    hovertext = STRINGS.ACTIONS.APPLYCONSTRUCTION,
+    hovertext = STRINGS.TOTEM_HELP_STRING,
     position = Vector3(280, -110, 0),
 }
 
-function params.totem_construction_container.widget.switchbutton.fn(inst, doer)
-    -- if inst.components.container ~= nil then
-    --     BufferedAction(doer, inst, ACTIONS.APPLYCONSTRUCTION):Do()
-    -- elseif inst.replica.container ~= nil and not inst.replica.container:IsBusy() then
-    --     SendRPCToServer(RPC.DoWidgetButtonAction, ACTIONS.APPLYCONSTRUCTION.code, inst, ACTIONS.APPLYCONSTRUCTION.mod_name)
-    -- end
-    if inst.components.container ~= nil then
-        -- SendModRPCToServer(GetModRPC("Succulent_RPC", "eazy_upgrade"))
-        local target = doer.components.constructionbuilderuidata:GetTarget()
-        if target ~= nil then
-            CONSTRUCTION_PLANS[target.prefab] = { Ingredient("twigs", 1) }
-        end
-        BufferedAction(doer, inst, ACTIONS.STOPCONSTRUCTION):Do()
-    elseif inst.replica.container ~= nil and not inst.replica.container:IsBusy() then
-        SendModRPCToServer(GetModRPC("Succulent_RPC", "eazy_upgrade"), ACTIONS.STOPCONSTRUCTION.code, inst)
-    end
-end
-
--- function params.totem_construction_container.widget.switchbutton.validfn(inst)
---     return inst.replica.container ~= nil and not inst.replica.container:IsEmpty()
+-- function params.totem_construction_container.widget.switchbutton.fn(inst, doer)
+--     -- if inst.components.container ~= nil then
+--     --     BufferedAction(doer, inst, ACTIONS.APPLYCONSTRUCTION):Do()
+--     -- elseif inst.replica.container ~= nil and not inst.replica.container:IsBusy() then
+--     --     SendRPCToServer(RPC.DoWidgetButtonAction, ACTIONS.APPLYCONSTRUCTION.code, inst, ACTIONS.APPLYCONSTRUCTION.mod_name)
+--     -- end
+--     if inst.components.container ~= nil then
+--         -- SendModRPCToServer(GetModRPC("Succulent_RPC", "eazy_upgrade"))
+--         local target = doer.components.constructionbuilderuidata:GetTarget()
+--         if target ~= nil then
+--             CONSTRUCTION_PLANS[target.prefab] = { Ingredient("twigs", 1) }
+--         end
+--         BufferedAction(doer, inst, ACTIONS.STOPCONSTRUCTION):Do()
+--     elseif inst.replica.container ~= nil and not inst.replica.container:IsBusy() then
+--         SendModRPCToServer(GetModRPC("Succulent_RPC", "eazy_upgrade"), ACTIONS.STOPCONSTRUCTION.code, inst)
+--     end
 -- end
 
- ]]
+function params.totem_construction_container.widget.switchbutton.validfn(inst)
+    -- return inst.replica.container ~= nil and not inst.replica.container:IsEmpty()
+    return false
+end
+
 
 
 

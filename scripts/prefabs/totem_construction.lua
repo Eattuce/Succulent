@@ -46,16 +46,59 @@ local Items = {
     {{"seeds", 20}}
 },
 {
-    {{"succulent_picked", 20}, {"townportaltalisman", 20}, {"cutstone", 20}, {"marble", 20}},
-    {{"seeds", 40}}
+    {{"succulent_picked", 20}, {"townportaltalisman", 10}, {"cutstone", 10}, {"marble", 20}},
+    {{"seeds", 40}, {"townportaltalisman", 10}, {"cutstone", 10}}
 },
 {
-    {{"succulent_picked", 30}, {"townportaltalisman", 30}, {"cutstone", 30}, {"marble", 20}},
-    {{"seeds", 40}, {"seeds", 20}, {"cutreeds", 40}}
+    {{"succulent_picked", 30}, {"townportaltalisman", 10}, {"cutstone", 10}, {"marble", 20}},
+    {{"seeds", 40}, {"seeds", 20}, {"cutreeds", 40}, {"cutstone", 10}},
+    {{"townportaltalisman", 10}, {"townportaltalisman", 10}, {"cutstone", 10}}
 },
 {
-    {{"succulent_picked", 40}, {"townportaltalisman", 40}, {"cutstone", 40}, {"marble", 20}},
-    {{"seeds", 40}, {"seeds", 20}, {"cutreeds", 40}}
+    {{"succulent_picked", 40}, {"townportaltalisman", 10}, {"cutstone", 10}, {"marble", 30}},
+    {{"seeds", 40}, {"seeds", 20}, {"cutreeds", 30}, {"cutreeds", 40}},
+    {{"townportaltalisman", 10}, {"townportaltalisman", 10}, {"townportaltalisman", 10}, {"cutstone", 10}},
+    {{"cutstone", 10}, {"cutstone", 10}}
+},
+{
+    {{"succulent_picked", 40}, {"townportaltalisman", 10}, {"cutstone", 10}, {"marble", 40}},
+    {{"seeds", 40}, {"seeds", 20}, {"cutreeds", 40}, {"cutreeds", 40}},
+    {{"townportaltalisman", 10}, {"townportaltalisman", 10}, {"townportaltalisman", 10}, {"townportaltalisman", 10}},
+    {{"cutstone", 10}, {"cutreeds", 20}, {"cutstone", 10}, {"succulent_picked", 10}},
+    {{"cutstone", 10}, {"cutstone", 10}}
+},
+{
+    {{"succulent_picked", 40}, {"townportaltalisman", 10}, {"cutstone", 10}, {"marble", 40}},
+    {{"seeds", 40}, {"seeds", 20}, {"cutreeds", 40}, {"rope", 20}},
+    {{"townportaltalisman", 10}, {"townportaltalisman", 10}, {"townportaltalisman", 10}, {"townportaltalisman", 10}},
+    {{"townportaltalisman", 10}, {"marble", 10}, {"cutreeds", 40}, {"cutreeds", 20}},
+    {{"succulent_picked", 20}, {"cutstone", 10}, {"cutstone", 10}, {"cutstone", 10}},
+    {{"cutstone", 10}, {"cutstone", 10}}
+},
+{
+    {{"succulent_picked", 40}, {"townportaltalisman", 10}, {"cutstone", 10}, {"marble", 40}},
+    {{"seeds", 40}, {"seeds", 20}, {"cutreeds", 40}, {"rope", 10}},
+
+    {{"townportaltalisman", 10}, {"townportaltalisman", 10}, {"townportaltalisman", 10}, {"townportaltalisman", 10}},
+    {{"townportaltalisman", 10}, {"marble", 20}, {"cutreeds", 40}, {"cutreeds", 20}},
+    {{"succulent_picked", 30}, {"townportaltalisman", 10}, {"rope", 10}, {"rope", 10}},
+    {{"rope", 10}, {"cutstone", 10}, {"cutstone", 10}, {"cutstone", 10}},
+    {{"cutstone", 10}, {"cutstone", 10}, {"cutstone", 10}}
+
+
+},
+{
+    {{"succulent_picked", 40}, {"townportaltalisman", 10}, {"cutstone", 10}, {"marble", 40}},
+    {{"seeds", 40}, {"seeds", 20}, {"cutreeds", 40}, {"rope", 10}, {"cactus_flower", 10}},
+
+    {{"townportaltalisman", 10}, {"townportaltalisman", 10}, {"townportaltalisman", 10}, {"townportaltalisman", 10}},
+    {{"townportaltalisman", 10}, {"marble", 20}, {"cutreeds", 40}, {"cutreeds", 40}},
+    {{"succulent_picked", 40}, {"townportaltalisman", 10}, {"rope", 10}, {"rope", 10}},
+    {{"rope", 10}, {"cutreeds", 10}, {"townportaltalisman", 10}, {"cutstone", 10}},
+    {{"cutstone", 10}, {"cutstone", 10}, {"cutstone", 10}, {"cutstone", 10}},
+    {{"cutstone", 10}, {"cutstone", 10}}
+
+
 },
 }
 
@@ -111,10 +154,13 @@ local function onconstruction_built(inst)
 end
 
 local function OnWorkFinished(inst, worker)
-    -- inst.components.lootdropper:DropLoot()
-    local tab = inst.level >= 1 and Items[inst.level] or {}
-    for i,v in ipairs(tab) do
-        DropBundle(inst, v)
+    if TUNING.TOTEM_UPGRADE_EAZY then
+        inst.components.lootdropper:DropLoot()
+    else
+        local tab = inst.level >= 1 and Items[inst.level] or {}
+        for i,v in ipairs(tab) do
+            DropBundle(inst, v)
+        end
     end
 
     local fx = SpawnPrefab("collapse_small")

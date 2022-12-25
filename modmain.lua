@@ -146,15 +146,11 @@ AddMinimapAtlas("images/map_icons/whitney.xml")
 AddMinimapAtlas("images/inventoryimages/pond_succulent.xml")
 
 --------------------------------------------------------------------------
--- 根据语言设置选择STRINGS文件
 local language = GetModConfigData("Language")
 local chinese = "scripts/languages/strings_chinese.lua"
 local english = "scripts/languages/strings_english.lua"
-if language == "chinese" then
-    modimport(chinese) --中文
-elseif language == "english" then
-    modimport(english) --英语
-end
+if language == "chinese" then modimport(chinese)
+elseif language == "english" then modimport(english) end
 TUNING.EMERALDSTAFF_USEDAY = GetModConfigData("staff")
 --------------------------------------------------------------------------
 -- 注册物品图标
@@ -191,24 +187,23 @@ end
 local mainfiles =
 {
     "modtownportal",
-    -- "modtownportaltalisman", -- in townportal
     "modantlion",
     "modmushroomfarm",
     "emeraldmooneye",
     "modcrabking",
     "oasistech",
-    -- "growmoretrees",
     "vegrack",
-    -- "saplingspostinits",
 
     "skins",
-    "addsg",
+    -- "addsg",
     -- "addactions",
     "modcontainerwidget",
     "addcontainers",
     "addrecipes",
     -- "brains",
-    "downgradesandstorm"
+    "downgradesandstorm",
+    "modsg",
+
 }
 for _,file in pairs(mainfiles) do
     modimport("scripts/"..file..".lua")

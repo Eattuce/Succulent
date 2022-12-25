@@ -10,9 +10,9 @@ version = "4.8.0"
 description =
     L
     and version.."   "..m.."/"..d.."/"..y..
-    "\n  - 'Relic' can be upgraded 8 times by adding materials after it is placed and changing its appearance \n  - Fixed multiple animations \n  - Added snow covered effect for some of mod structures\n"
+    "\n  - 'Relic' can be upgraded 8 times by adding materials and changing it's appearance \n  - Fixed multiple animations \n  - Added snow covered effect for some of mod structures\n  - Build a small pond "
     or version.."   "..y.."/"..m.."/"..d..
-    "\n  - 遗迹赝品在放置后可以通过添加材料进行升级改变外观 可升级8次 \n  - 修复多个动画 \n  - 为部分模组建筑增加覆雪效果\n"
+    "\n  - 遗迹赝品在放置后可以通过添加材料进行升级改变外观 可升级8次 \n  - 修复多个动画 \n  - 为部分模组建筑增加覆雪效果\n  - 可以建造自己的池塘"
 
 forumthread = nil
 
