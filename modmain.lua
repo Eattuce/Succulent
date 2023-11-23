@@ -44,6 +44,7 @@ PrefabFiles =
     "extrasnowprefab",
     "pond_succulent",
     "pond_succulent_plant",
+    "succulent_decors",
 }
 
 Assets =
@@ -119,6 +120,8 @@ Assets =
     Asset("ATLAS", impath.."dug_thistle_bush.xml"),
 
     Asset("ANIM", "anim/ui_construction_5x1.zip"),
+    Asset("IMAGE", impath.."pond_succulent_item.tex"),
+    Asset("ATLAS", impath.."pond_succulent_item.xml"),
 
 }
 
@@ -175,8 +178,11 @@ local items =
     "medpot_spb",
     "succulentfarm_sp",
     "succulent_largepot_sp",
-    "dug_thistle_bush"
-
+    "dug_thistle_bush",
+    "constructionpermit",
+    "pond_succulent_item",
+    "succulent_decor_mushroom",
+    "succulent_decor_egg",
 }
 for _,item in pairs(items) do
     RegisterInventoryItemAtlas(impath..item..".xml", item..".tex")

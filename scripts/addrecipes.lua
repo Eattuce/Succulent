@@ -105,7 +105,7 @@ ACTIONS.BUILD.extra_arrive_dist = ExtraBuildDist
 local function CanMakePond(pt, rot)
     local ground_tile = TheWorld.Map:GetTileAtPoint(pt.x, pt.y, pt.z)
     local GROUND_FLOORING = GROUND_FLOORING or {}
-    return ground_tile and GROUND_FLOORING[ground_tile] and not (ground_tile == WORLD_TILES.MONKEY_DOCK)
+    return ground_tile and GROUND_FLOORING[ground_tile] and not TheWorld.Map:IsDockAtPoint(pt.x, 0, pt.z)
 end
 
 ------------------------------------------------------------------------
@@ -152,9 +152,14 @@ AddRecipe2("emeraldstaff",                  {Ingredient("nightmarefuel", 4), Ing
 AddRecipeToFilter("emeraldstaff",           "MAGIC")
 AddRecipeToFilter("emeraldstaff",           "GARDENING")
 
-AddRecipe2("chandelier_rock",              { Ingredient("rope", 2), Ingredient("townportaltalisman", 3), Ingredient("succulent_picked", 4), Ingredient("lightcrab", 3)}, TECH.SCIENCE_TWO,       {placer = "chandelier_rock_placer", min_spacing = 3, atlas = impath.."chandelier_rock.xml", image="chandelier_rock.tex", testfn = HasCeilling, build_mode = BUILDMODE_AIR})
+AddRecipe2("chandelier_rock",               {Ingredient("rope", 2), Ingredient("townportaltalisman", 3), Ingredient("succulent_picked", 4), Ingredient("lightcrab", 3)}, TECH.SCIENCE_TWO,       {placer = "chandelier_rock_placer", min_spacing = 3, atlas = impath.."chandelier_rock.xml", image="chandelier_rock.tex", testfn = HasCeilling, build_mode = BUILDMODE_AIR})
 AddRecipeToFilter("chandelier_rock", "LIGHT")
 AddRecipeToFilter("chandelier_rock", "STRUCTURES")
+
+AddRecipe2("succulent_decor_mushroom",      {Ingredient("log", 2), Ingredient("red_cap", 3), Ingredient("green_cap", 2) },   TECH.CARPENTRY_TWO,       {atlas = impath.."succulent_decor_mushroom.xml", image = "succulent_decor_mushroom.tex"})
+AddRecipeToFilter("succulent_decor_mushroom","DECOR")
+AddRecipe2("succulent_decor_egg",           {Ingredient("log", 2), Ingredient("tallbirdegg", 1), Ingredient("bird_egg", 2)},    TECH.CARPENTRY_TWO,       {atlas = impath.."succulent_decor_egg.xml", image = "succulent_decor_egg.tex"})
+AddRecipeToFilter("succulent_decor_egg",    "DECOR")
 
 -- 沙漠遗迹科技，制作站
 -- OASIS
@@ -170,20 +175,26 @@ AddRecipeToFilter("tent_leaves_item", "CRAFTING_STATION")
 AddRecipe2("vegrack_item",                  { Ingredient("cutstone", 4), Ingredient("townportaltalisman", 4) },                                                     TECH.OASISTECH_TWO,     {nounlock = true, atlas = impath.."vegrack.xml", image = "vegrack.tex"})
 AddRecipeToFilter("vegrack_item", "CRAFTING_STATION")
 
-AddRecipe2("treasurechest_succulent_item",  { Ingredient("cutstone", 10), Ingredient("townportaltalisman", 10) },                                                   TECH.OASISTECH_TWO,     {nounlock = true, atlas = impath.."treasurechest_succulent.xml", image = "treasurechest_succulent.tex"--[[ , placer="treasurechest_succulent_placer", min_spacing=1.5 ]]})
+AddRecipe2("treasurechest_succulent_item",  { Ingredient("cutstone", 10), Ingredient("townportaltalisman", 10) },                                                   TECH.OASISTECH_TWO,     {nounlock = true, atlas = impath.."treasurechest_succulent.xml", image = "treasurechest_succulent.tex"})
 AddRecipeToFilter("treasurechest_succulent_item", "CRAFTING_STATION")
+
+AddRecipe2("pond_succulent_item",           { Ingredient("townportaltalisman", 4), Ingredient("cutstone", 6), Ingredient("succulent_picked", 6)},                   TECH.OASISTECH_TWO,     {nounlock = true, min_spacing = 4, atlas = impath.."pond_succulent.xml", image="pond_succulent.tex"})
+AddRecipeToFilter("pond_succulent_item", "DECOR")
+AddRecipeToFilter("pond_succulent_item", "GARDENING")
+AddRecipeToFilter("pond_succulent_item", "CRAFTING_STATION")
 
 
 
 
 -- 人物
 -- 惠特尼
-AddCharacterRecipe("tent_leaves",               {Ingredient("bedroll_straw", 1), Ingredient("cactus_flower", 6), Ingredient("cutreeds", 6)},                        TECH.NONE,          {builder_tag = "oasisenvoy",      min_spacing = 1,      placer = "tent_leaves_item_placer",  atlas = impath.."tent_leaves_item.xml", image = "tent_leaves_item.tex"})
-AddCharacterRecipe("totem",                     {Ingredient("cutstone", 3),Ingredient("townportaltalisman", 4)},                                                    TECH.NONE,          {builder_tag = "oasisenvoy",      min_spacing = 1,      placer = "totem_item_placer",  atlas = impath.."totem_item.xml", image = "totem_item.tex"})
-AddCharacterRecipe("python_fountain",           {Ingredient("cutstone", 6), Ingredient("ice", 10), Ingredient("townportaltalisman", 4)},                            TECH.NONE,          {builder_tag = "oasisenvoy",      min_spacing = 1,      placer = "python_fountain_item_placer",  atlas = impath.."python_fountain_item.xml",image = "python_fountain_item.tex"})
-AddCharacterRecipe("vegrack",                   {Ingredient("cutstone", 4), Ingredient("townportaltalisman", 4)},                                                   TECH.NONE,          {builder_tag = "oasisenvoy",      min_spacing = 1,      placer = "vegrack_item_placer", atlas = impath.."vegrack.xml", image = "vegrack.tex"})
-AddCharacterRecipe("succulent_picked",          {Ingredient(CHARACTER_INGREDIENT.SANITY, 5), Ingredient("spoiled_food", 3)},                                        TECH.NONE,          {builder_tag = "oasisenvoy",      min_spacing = 1,      numtogive = 3--[[ ,sg_state = "summon_abigail" ]]--[[ "formsucculent" ]]})
-AddCharacterRecipe("treasurechest_succulent",   {Ingredient("cutstone", 10), Ingredient("townportaltalisman", 10)},                                                 TECH.NONE,          {builder_tag = "oasisenvoy",      min_spacing = 1,      placer="treasurechest_succulent_item_placer",  atlas = impath.."treasurechest_succulent.xml", image = "treasurechest_succulent.tex"})
+AddCharacterRecipe("tent_leaves",               { Ingredient("bedroll_straw", 1), Ingredient("cactus_flower", 6), Ingredient("cutreeds", 6)},                       TECH.NONE,          {builder_tag = "oasisenvoy",    min_spacing = 1,    placer = "tent_leaves_item_placer",  atlas = impath.."tent_leaves_item.xml", image = "tent_leaves_item.tex"})
+AddCharacterRecipe("totem",                     { Ingredient("cutstone", 3),Ingredient("townportaltalisman", 4)},                                                   TECH.NONE,          {builder_tag = "oasisenvoy",    min_spacing = 1,    placer = "totem_item_placer",  atlas = impath.."totem_item.xml", image = "totem_item.tex"})
+AddCharacterRecipe("python_fountain",           { Ingredient("cutstone", 6), Ingredient("ice", 10), Ingredient("townportaltalisman", 4)},                           TECH.NONE,          {builder_tag = "oasisenvoy",    min_spacing = 1,    placer = "python_fountain_item_placer",  atlas = impath.."python_fountain_item.xml",image = "python_fountain_item.tex"})
+AddCharacterRecipe("vegrack",                   { Ingredient("cutstone", 4), Ingredient("townportaltalisman", 4)},                                                  TECH.NONE,          {builder_tag = "oasisenvoy",    min_spacing = 1,    placer = "vegrack_item_placer", atlas = impath.."vegrack.xml", image = "vegrack.tex"})
+AddCharacterRecipe("succulent_picked",          { Ingredient(CHARACTER_INGREDIENT.SANITY, 5), Ingredient("spoiled_food", 3)},                                       TECH.NONE,          {builder_tag = "oasisenvoy",    numtogive = 3--[[ ,sg_state = "summon_abigail" ]]--[[ "formsucculent" ]]})
+AddCharacterRecipe("treasurechest_succulent",   { Ingredient("cutstone", 10), Ingredient("townportaltalisman", 10)},                                                TECH.NONE,          {builder_tag = "oasisenvoy",    min_spacing = 1,    placer="treasurechest_succulent_item_placer",  atlas = impath.."treasurechest_succulent.xml", image = "treasurechest_succulent.tex"})
+AddCharacterRecipe("pond_succulent",            { Ingredient("townportaltalisman", 4), Ingredient("cutstone", 6), Ingredient("succulent_picked", 6)},               TECH.NONE,          {builder_tag = "oasisenvoy",    min_spacing = 4,    placer = "pond_succulent_item_placer", atlas = impath.."pond_succulent.xml", image="pond_succulent.tex", testfn = CanMakePond})
 
 
 -- Construction Plans
@@ -227,9 +238,6 @@ else
     -- AddDeconstructRecipe("totem_construction8", { Ingredient("succulent_picked", 80), Ingredient("townportaltalisman", 84), Ingredient("cutstone", 83), Ingredient("marble", 60), Ingredient("seeds", 60), Ingredient("cutreeds", 130), Ingredient("rope", 40), Ingredient("cactus_flower", 10) })
 end
 
-AddRecipe2("pond_succulent", { Ingredient("townportaltalisman", 4), Ingredient("cutstone", 6), Ingredient("succulent_picked", 6)}, TECH.SCIENCE_TWO, {placer = "pond_succulent_placer", min_spacing = 4, atlas = impath.."pond_succulent.xml", image="pond_succulent.tex", testfn = CanMakePond})
-AddRecipeToFilter("pond_succulent", "DECOR")
-AddRecipeToFilter("pond_succulent", "GARDENING")
 
 
 

@@ -14,11 +14,8 @@ local assets =
 
 local prefabs =
 {
-    "marsh_plant",
 	"pondfish",
 	"pondeel",
-    "frog",
-    "mosquito",
 }
 
 local function SpawnPlants(inst)
@@ -230,9 +227,19 @@ local function fn()
     return inst
 end
 
+local function invalid_placement_fn(player, placer)
+    if placer and placer.mouse_blocked then
+        return
+    end
+
+    if player and player.components.talker then
+        player.components.talker:Say(GetString(player, "ANNOUNCE_SUCCULENT_POND"))
+    end
+end
+
 return Prefab("pond_succulent", fn, assets, prefabs),
-    MakePlacer("pond_succulent_placer", "marsh_tile", "pond_succulent_build", "idle", nil, nil, nil, nil, nil, nil,
+    MakePlacer("pond_succulent_item_placer", "marsh_tile", "pond_succulent_build", "idle", nil, nil, nil, nil, nil, nil,
     function (inst)
         inst.AnimState:SetOrientation(ANIM_ORIENTATION.OnGround)
         inst.AnimState:SetLayer(LAYER_BACKGROUND)
-    end)
+    end, nil, invalid_placement_fn)

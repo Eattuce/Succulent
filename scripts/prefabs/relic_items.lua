@@ -1,9 +1,7 @@
 
 local assets =
 {
-    Asset( "ANIM", "anim/relic_item_bundle.zip" ),
-    Asset( "ANIM", "anim/items_for_bundle.zip" ),
-
+    Asset( "ANIM", "anim/permit_demolition.zip" ),
 }
 
 local function deployablekititem_ondeploy(inst, pt, deployer, rot)
@@ -18,7 +16,13 @@ local function deployablekititem_ondeploy(inst, pt, deployer, rot)
     end
 end
 
-local function MakeStoneMadeDeployableKitItem(name, prefab_to_deploy, tags, deployable_data, symbol)
+local function pond_deploy_fn(inst, pt, mouseover, deployer, rot)
+	local ground_tile = TheWorld.Map:GetTileAtPoint(pt.x, pt.y, pt.z)
+    local GROUND_FLOORING = GROUND_FLOORING or {}
+    return ground_tile and GROUND_FLOORING[ground_tile] and not TheWorld.Map:IsDockAtPoint(pt.x, 0, pt.z)
+end
+
+local function MakeStoneMadeDeployableKitItem(name, prefab_to_deploy, tags, deployable_data)
 	deployable_data = deployable_data or {}
 
 	return Prefab(name, function()
@@ -30,11 +34,9 @@ local function MakeStoneMadeDeployableKitItem(name, prefab_to_deploy, tags, depl
 
 		MakeInventoryPhysics(inst)
 
-		inst.AnimState:SetBank("bundle_items")
-		inst.AnimState:SetBuild("relic_item_bundle")
+		inst.AnimState:SetBank("permit_demolition")
+		inst.AnimState:SetBuild("permit_demolition")
 		inst.AnimState:PlayAnimation("idle")
-        inst.AnimState:OverrideSymbol("swap_item", "items_for_bundle", symbol)
-
 
 		if tags ~= nil then
 			for _, tag in pairs(tags) do
@@ -57,6 +59,8 @@ local function MakeStoneMadeDeployableKitItem(name, prefab_to_deploy, tags, depl
 
 		inst:AddComponent("inventoryitem")
 		inst.components.inventoryitem:SetSinks(true)
+		-- inst.components.inventoryitem.atlasname = "images/inventoryimages/constructionpermit.xml"
+		-- inst.components.inventoryitem.imagename = "images/inventoryimages/constructionpermit.tex"
 
         inst:AddComponent("stackable")
         inst.components.stackable.maxsize = TUNING.STACK_SIZE_LARGEITEM
@@ -88,7 +92,8 @@ end
 
 
 return 
-    MakeStoneMadeDeployableKitItem("python_fountain_item",              "python_fountain",          nil, {deployspacing = 1}, "fountain"),
-    MakeStoneMadeDeployableKitItem("treasurechest_succulent_item",      "treasurechest_succulent",  nil, {deployspacing = 2}, "chest"),
-    MakeStoneMadeDeployableKitItem("vegrack_item",                      "vegrack",                  nil, {deployspacing = 2}, "vegrack"),
-    MakeStoneMadeDeployableKitItem("totem_item",                        "totem",                    nil, {deployspacing = 2}, "totem")
+    MakeStoneMadeDeployableKitItem("python_fountain_item",              "python_fountain",          nil, {deployspacing = 1}),
+    MakeStoneMadeDeployableKitItem("treasurechest_succulent_item",      "treasurechest_succulent",  nil, {deployspacing = 2}),
+    MakeStoneMadeDeployableKitItem("vegrack_item",                      "vegrack",                  nil, {deployspacing = 2}),
+    MakeStoneMadeDeployableKitItem("totem_item",                        "totem",                    nil, {deployspacing = 2}),
+    MakeStoneMadeDeployableKitItem("pond_succulent_item",          		"pond_succulent",			nil, {deployspacing = 4, deploymode = DEPLOYMODE.CUSTOM, custom_candeploy_fn = pond_deploy_fn})

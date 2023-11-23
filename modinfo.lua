@@ -1,18 +1,18 @@
 
 local L = locale ~= "zh" and locale ~= "zhr" --true-英文; false-中文
-local y = "2022"
-local m = "12"
-local d = "25"
+local y = "2023"
+local m = "10"
+local d = "21"
 
 name = L and "Succulent plant" or "多肉植物!"
 author = "码：生菜  画：灰色代表作"
-version = "4.8.0"
+version = "4.9.0"
 description =
     L
     and version.."   "..m.."/"..d.."/"..y..
-    "\n  - 'Relic' can be upgraded 8 times by adding materials and changing it's appearance \n  - Fixed multiple animations \n  - Added snow covered effect for some of mod structures\n  - Build a small pond "
+    "\n  - 2 NEW craftale decorations that can be put on the table. "
     or version.."   "..y.."/"..m.."/"..d..
-    "\n  - 遗迹赝品在放置后可以通过添加材料进行升级改变外观 可升级8次 \n  - 修复多个动画 \n  - 为部分模组建筑增加覆雪效果\n  - 可以建造自己的池塘"
+    "\n  - 新增可以放在桌上的装饰物 (可以再装饰一栏找到它们 需要新的科技)"
 
 forumthread = nil
 
